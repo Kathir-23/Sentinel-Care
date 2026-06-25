@@ -1,182 +1,580 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <meta name="description" content="Hospital Management System — Professional Care Portal" />
 
-    <!-- jquery -->
+    <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
 
-    <!-- bootstrap  -->
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
+    <!-- Bootstrap 4 (Base utilities & modals) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
 
-    <!-- font-awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-      integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
-      crossorigin="anonymous"
-    />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
     
-    <!-- custom stylesheet -->
-    <link
-      rel="stylesheet"
-      href="{% static 'styles/base.css' %}"
-      type="text/css"
-    />
+    <!-- Custom Enhanced Stylesheet -->
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}" type="text/css" />
 
-    <!-- jquery autocomplete css -->
+    <!-- jQuery Autocomplete CSS -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    {% comment %} <link rel="stylesheet" href="{% static 'styles/patient.css' %}"> {% endcomment %}
-    
-    <!-- google api font -->
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
-
-    <!-- .autocomplete -->
-    <!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+    <!-- jQuery Autocomplete JS -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <title>{% block title %} AppName {% endblock %}</title>
+
+    <title>{% block title %}HMS — Care Portal{% endblock %}</title>
   </head>
 
   <body>
 
-<!-- vertical-nav starts here -->
-<div class="vertical-nav" id="sidebar">
+    <!-- ─── SIDEBAR NAVIGATION ─── -->
+    <div class="vertical-nav" id="sidebar">
+        
+        <!-- Logo Header -->
+        <div class="sidebar-logo-container">
+            <i class="fas fa-heartbeat"></i>
+            <span class="sidebar-logo-title">HMS Care<br><span style="font-size:0.75rem; opacity:0.75; font-weight:500;">Hospital Portal</span></span>
+        </div>
 
-	<!-- staff profile -->
-	<div class="py-4 px-3 mb-4">
-		<!-- staff photo -->
-		<div class="media d-flex align-items-center">
-			<div class="media-body text-white">
-      {% if request.user.is_authenticated %}
-				<p class="font-weight-normal mb-0">
-					Role: {% if request.user.is_superuser == True %}
-        Admin
-        {% elif request.user.is_superuser == False and request.user.is_staff == True  %}
-          Staff
-      {% endif %}
-				</p>
+        <!-- Professional Staff Profile Card -->
+        {% if request.user.is_authenticated %}
+        <div class="sidebar-profile-card">
+            <div class="profile-avatar-row">
+                <div class="profile-avatar">
+                    <!-- Grab user initials dynamically -->
+                    {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+                </div>
+                <div class="profile-info">
+                    <h6>{{ request.user.first_name }} {{ request.user.last_name }}</h6>
+                    <p>{{ request.user.email }}</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-1">
+                <span class="profile-badge">
+                    {% if request.user.is_superuser %}
+                        Admin
+                    {% else %}
+                        Staff Coordinator
+                    {% endif %}
+                </span>
+                <span style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6);"><i class="fas fa-circle text-success mr-1" style="font-size: 0.5rem;"></i> Active</span>
+            </div>
+        </div>
         {% endif %}
-			</div>
-		</div>
-	</div>
 
-	<!-- greeting -->
-	<p class="text-white font-weight-bold px-3 pb-4 mb-0">
-		Hello {{user.first_name}}
-	</p>
+        <!-- Navigation Links -->
+        <ul class="sidebar-nav-list">
+            <!-- Dashboard -->
+            <li class="sidebar-nav-item {% if request.path == '/' %}active{% endif %}">
+                <a href="{% url 'dashboard' %}" class="sidebar-nav-link">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+            </li>
 
-	<!-- refirect dashboard -->
-	<p class="text-gray font-weight-bold px-3 pb-4 mb-0">
-		<a href="{% url 'dashboard' %}" class="nav-link text-white">
-			<i class="fa fa-th-large mr-3 text-primary"></i> Dashboard</a>
-	</p>
-{% if request.user.is_authenticated == True %}
-	<ul class="nav flex-column mb-0">
-		<li class="nav-item">
-			<a href="{% url 'patient_list' %}" class="nav-link text-white">
-				<i class="fa fa-address-card mr-3 text-primary fa-fw"></i>View patient list 
-			</a>
-		</li>
-		
-		<li class="nav-item">
-			<a href="{% url 'add_patient' %}" class="nav-link text-white">
-				<i class="fa fa-plus mr-3 text-primary fa-fw"></i>Add patient
-			</a>
-    </li>
-    
-    {% endif %}
-    <li class="nav-item">
-      <a href="{% url 'info' %}" class="nav-link text-white">
-        <i class="fa fa-plus mr-3 text-primary fa-fw"></i>Info
-      </a>
-    </li>
-    
-    {% if request.user.is_authenticated == False %}
-    <li class="nav-item">
-			<a href="{% url 'login' %}" class="nav-link text-white">
-				<i class="fa fa-sign-in-alt mr-3 text-primary fa-fw"></i>Login
-			</a>
-		</li>
-    {% else %}
-		<li class="nav-item">
-			<a href="{% url 'logout' %}" class="nav-link text-white">
-				<i class="fa fa-sign-out-alt mr-3 text-primary fa-fw"></i>Logout
-			</a>
-		</li>
-    {% endif %}
-	</ul>
-</div>  
-    <!-- end of verical nav -->
+            {% if request.user.is_authenticated %}
+            <!-- Patient List -->
+            <li class="sidebar-nav-item {% if 'patient_list' in request.path %}active{% endif %}">
+                <a href="{% url 'patient_list' %}" class="sidebar-nav-link">
+                    <i class="fas fa-user-injured"></i> View Patient List
+                </a>
+            </li>
+            
+            <!-- Add Patient -->
+            <li class="sidebar-nav-item {% if 'add_patient' in request.path %}active{% endif %}">
+                <a href="{% url 'add_patient' %}" class="sidebar-nav-link">
+                    <i class="fas fa-user-plus"></i> Add Patient
+                </a>
+            </li>
+            {% endif %}
 
-    <div class="page-content p-5" id="content">
-        <!-- toggle button -->
-        <button id="sidebarCollapse" class="btn btn-light bg-dark rounded-pill shadow-sm px-4 mb-4" type="button">
-            <i class="fa fa-bars mr-2 text-primary"></i>
-            <small class="font-weight-bold text-primary">
-                Toggle
-            </small>
-        </button>
-		
-		<h2 class="display-4 ">{% block contentTitle %}{% endblock contentTitle %}
-		</h2>
+            <!-- Info Page -->
+            <li class="sidebar-nav-item {% if 'info' in request.path %}active{% endif %}">
+                <a href="{% url 'info' %}" class="sidebar-nav-link">
+                    <i class="fas fa-info-circle"></i> Care Info Hub
+                </a>
+            </li>
+        </ul>
 
-		<div class="seperator mt-1 mb-4"></div>
-		{% block content %}
-			<div class="container-fluid">
-				
-				<!-- Content Row -->
-				<div class="row">
-				</div>
-			</div>
-		{% endblock content %}
-			
+        <!-- Sidebar Footer & Logout -->
+        <div class="sidebar-footer">
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="btn btn-outline-light btn-block btn-sm" style="border-color: rgba(255,255,255,0.2); font-weight: 600;">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-light btn-block btn-sm" style="font-weight: 600;">
+                <i class="fas fa-sign-in-alt mr-2"></i> Log In
+            </a>
+            {% endif %}
+        </div>
     </div>
-    
-        <!-- boostrap js links -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-      integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
-      integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
-      crossorigin="anonymous"
-    ></script>
+    <!-- ─── END SIDEBAR ─── -->
 
-    <!-- autocomplete scripts -->
+    <!-- ─── MAIN PAGE CONTENT AREA ─── -->
+    <div class="page-content" id="content">
+        
+        <!-- ─── TOP NAVIGATION HEADER ─── -->
+        <header class="top-navbar">
+            <!-- Sidebar toggle button -->
+            <div class="d-flex align-items-center">
+                <button id="sidebarCollapse" class="btn btn-light rounded-circle shadow-sm flex-shrink-0" type="button" style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                    <i class="fa fa-bars" style="color: var(--primary-light) !important;"></i>
+                </button>
+                <span class="d-none d-md-inline font-weight-bold text-muted ml-3" style="font-size: 0.9rem; white-space: nowrap;">
+                    HMS / {% block breadcrumb %}Dashboard{% endblock %}
+                </span>
+            </div>
+
+            <!-- Global Search Box -->
+            <div class="header-search">
+                <form action="{% url 'patient_list' %}" method="GET">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="name" id="global_search_input" placeholder="Search patients, staff, bed records..." />
+                </form>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions flex-shrink-0">
+                <!-- Theme Toggle Button -->
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                <!-- Notifications Dropdown -->
+                <div class="notif-wrapper" id="notifWrapper">
+
+                    <!-- Bell trigger -->
+                    <button class="notification-bell" id="notifBellBtn"
+                            aria-haspopup="true" aria-expanded="false"
+                            aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notifBadge" style="display:none;">0</span>
+                    </button>
+
+                    <!-- Dropdown panel -->
+                    <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications panel" style="display:none;">
+
+                        <!-- Panel header -->
+                        <div class="notif-panel-header">
+                            <span class="notif-panel-title">
+                                <i class="fas fa-bell mr-2"></i>Notifications
+                            </span>
+                            <button class="notif-mark-all-btn" id="notifMarkAllBtn" type="button">
+                                Mark all as read
+                            </button>
+                        </div>
+
+                        <!-- Notification list -->
+                        <div class="notif-list" id="notifList">
+                            <!-- Items injected by JS -->
+                        </div>
+
+                        <!-- Empty state -->
+                        <div class="notif-empty" id="notifEmpty" style="display:none;">
+                            <i class="fas fa-check-circle notif-empty-icon"></i>
+                            <p>No new notifications</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Live Connection Badge -->
+                <span class="badge badge-success ml-2 d-none d-sm-inline-flex align-items-center" style="font-size: 0.8rem; border-radius: 20px; padding: 0.4rem 0.75rem;">
+                    <i class="fas fa-wifi mr-1"></i> Live
+                </span>
+            </div>
+        </header>
+        <!-- ─── END TOP NAVIGATION HEADER ─── -->
+
+        <!-- ─── CONTAINER CONTENT ─── -->
+        <main class="p-4 p-md-5 flex-grow-1 fade-in-up">
+            {% block content %}
+            <!-- Main child contents load here -->
+            {% endblock content %}
+        </main>
+        
+    </div>
+    <!-- ─── END LAYOUT ─── -->
+
+    <!-- Bootstrap & Popper Script Bundles -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+
+    <!-- Global Interactions and Autocomplete JS -->
     <script>
-      /*
-      $( "#tags" ).autocomplete({
-      source: availableTags
-    });
-    */
-    $( function() {
-      $( "#id_name" ).autocomplete({
-      	source: "{% url 'autosuggest' %}"
-    });
-  	});
+      $(function() {
 
-    $( function() {
-      $( "#doctor" ).autocomplete({
-      	source: "{% url 'autodoctor' %}"
-    });
-  	});
+          // ── Sidebar Toggle ────────────────────────────────────────────
+          $('#sidebarCollapse').on('click', function() {
+              $('#sidebar, #content').toggleClass('active');
+          });
+
+          // ── Theme Toggle ──────────────────────────────────────────────
+          const themeToggleBtn = document.getElementById('themeToggleBtn');
+          const htmlElement = document.documentElement;
+          const savedTheme = localStorage.getItem('theme') || 'light';
+          htmlElement.setAttribute('data-theme', savedTheme);
+          updateThemeIcon(savedTheme);
+
+          themeToggleBtn.addEventListener('click', () => {
+              const currentTheme = htmlElement.getAttribute('data-theme');
+              const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+              htmlElement.setAttribute('data-theme', newTheme);
+              localStorage.setItem('theme', newTheme);
+              updateThemeIcon(newTheme);
+          });
+
+          function updateThemeIcon(theme) {
+              const icon = themeToggleBtn.querySelector('i');
+              if (theme === 'dark') {
+                  icon.className = 'fas fa-sun';
+                  themeToggleBtn.title = 'Switch to Light Mode';
+              } else {
+                  icon.className = 'fas fa-moon';
+                  themeToggleBtn.title = 'Switch to Dark Mode';
+              }
+          }
+
+          // ── Search Autocomplete ───────────────────────────────────────
+          $('#global_search_input').autocomplete({
+              source: "{% url 'autosuggest' %}"
+          });
+
+          // Enable Bootstrap tooltips
+          $('[data-toggle="tooltip"]').tooltip();
+
+
+          // ══════════════════════════════════════════════════════════════
+          //  NOTIFICATION CENTER
+          //  TODO: connect to real notifications API — replace the
+          //  `notifications` array below with a fetch() call to your
+          //  backend endpoint (e.g. GET /api/notifications/) and call
+          //  renderNotifications() with the response data.
+          // ══════════════════════════════════════════════════════════════
+
+          // ── Data store ───────────────────────────────────────────────
+          var notifications = [
+              {
+                  id: 1,
+                  icon: 'fa-exclamation-circle',
+                  iconColor: 'notif-icon--red',
+                  message: 'Patient Shyren More (Bed A1) is in Critical condition.',
+                  time: new Date(Date.now() - 2  * 60 * 1000),  // 2 min ago
+                  read: false
+              },
+              {
+                  id: 2,
+                  icon: 'fa-bed',
+                  iconColor: 'notif-icon--blue',
+                  message: 'Bed B2 is now available — patient discharged.',
+                  time: new Date(Date.now() - 18 * 60 * 1000),  // 18 min ago
+                  read: false
+              },
+              {
+                  id: 3,
+                  icon: 'fa-user-plus',
+                  iconColor: 'notif-icon--teal',
+                  message: 'New patient "Test Patient" admitted to Ward C.',
+                  time: new Date(Date.now() - 55 * 60 * 1000),  // 55 min ago
+                  read: false
+              }
+          ];
+
+          // ── Helpers ──────────────────────────────────────────────────
+          function timeAgo(date) {
+              var seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+              if (seconds < 60)  return 'Just now';
+              var minutes = Math.floor(seconds / 60);
+              if (minutes < 60)  return minutes + ' min ago';
+              var hours = Math.floor(minutes / 60);
+              if (hours < 24)    return hours + ' hr ago';
+              return Math.floor(hours / 24) + ' d ago';
+          }
+
+          function unreadCount() {
+              return notifications.filter(function(n) { return !n.read; }).length;
+          }
+
+          // ── Render ───────────────────────────────────────────────────
+          function renderNotifications() {
+              var list  = document.getElementById('notifList');
+              var empty = document.getElementById('notifEmpty');
+              var badge = document.getElementById('notifBadge');
+              var btn   = document.getElementById('notifBellBtn');
+              var count = unreadCount();
+
+              // Badge
+              if (count > 0) {
+                  badge.textContent = count;
+                  badge.style.display = 'flex';
+                  btn.setAttribute('aria-label', count + ' unread notifications');
+              } else {
+                  badge.style.display = 'none';
+                  btn.setAttribute('aria-label', 'No new notifications');
+              }
+
+              // List items
+              list.innerHTML = '';
+              if (notifications.length === 0) {
+                  list.style.display = 'none';
+                  empty.style.display = 'flex';
+                  return;
+              }
+              list.style.display = 'block';
+              empty.style.display = 'none';
+
+              notifications.forEach(function(notif) {
+                  var item = document.createElement('div');
+                  item.className = 'notif-item' + (notif.read ? ' notif-item--read' : '');
+                  item.setAttribute('data-id', notif.id);
+                  item.innerHTML =
+                      '<div class="notif-item-icon ' + notif.iconColor + '">' +
+                          '<i class="fas ' + notif.icon + '"></i>' +
+                      '</div>' +
+                      '<div class="notif-item-body">' +
+                          '<p class="notif-item-msg">' + notif.message + '</p>' +
+                          '<span class="notif-item-time">' + timeAgo(notif.time) + '</span>' +
+                      '</div>' +
+                      (notif.read ? '' : '<div class="notif-unread-dot"></div>');
+
+                  item.addEventListener('click', function() {
+                      markRead(notif.id);
+                  });
+                  list.appendChild(item);
+              });
+          }
+
+          function markRead(id) {
+              notifications = notifications.map(function(n) {
+                  return n.id === id ? Object.assign({}, n, { read: true }) : n;
+              });
+              renderNotifications();
+          }
+
+          function markAllRead() {
+              notifications = notifications.map(function(n) {
+                  return Object.assign({}, n, { read: true });
+              });
+              renderNotifications();
+          }
+
+          // ── Open / Close panel ───────────────────────────────────────
+          var bellBtn  = document.getElementById('notifBellBtn');
+          var panel    = document.getElementById('notifPanel');
+          var wrapper  = document.getElementById('notifWrapper');
+          var markAllBtn = document.getElementById('notifMarkAllBtn');
+          var isOpen   = false;
+
+          function openPanel() {
+              isOpen = true;
+              panel.style.display = 'block';
+              bellBtn.setAttribute('aria-expanded', 'true');
+              renderNotifications();
+              // Small entrance animation
+              panel.style.opacity = '0';
+              panel.style.transform = 'translateY(-6px)';
+              requestAnimationFrame(function() {
+                  panel.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+                  panel.style.opacity = '1';
+                  panel.style.transform = 'translateY(0)';
+              });
+          }
+
+          function closePanel() {
+              isOpen = false;
+              panel.style.display = 'none';
+              bellBtn.setAttribute('aria-expanded', 'false');
+          }
+
+          bellBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              if (isOpen) { closePanel(); } else { openPanel(); }
+          });
+
+          markAllBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              markAllRead();
+          });
+
+          // Close on outside click
+          document.addEventListener('click', function(e) {
+              if (isOpen && !wrapper.contains(e.target)) {
+                  closePanel();
+              }
+          });
+
+          // Close on Escape
+          document.addEventListener('keydown', function(e) {
+              if (e.key === 'Escape' && isOpen) {
+                  closePanel();
+                  bellBtn.focus();
+              }
+          });
+
+          // Initial render (sets badge on page load)
+          renderNotifications();
+
+      });
     </script>
 
-    <!-- {% comment %} custom js file {% endcomment %} -->
-    <script src="{% static 'scripts/base.js' %}"></script>
+    <!-- Notification panel styles (scoped to notif- prefix) -->
+    <style>
+    /* Bell button reset */
+    .notification-bell {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.4rem;
+    }
+
+    /* Wrapper — anchor for the absolutely-positioned panel */
+    .notif-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        margin-left: 1rem;
+    }
+
+    /* Dropdown panel */
+    .notif-panel {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        right: 0;
+        width: 22rem;
+        max-width: calc(100vw - 2rem);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-lg);
+        z-index: 1080;
+        overflow: hidden;
+    }
+
+    /* Panel header */
+    .notif-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-main);
+    }
+    [data-theme="dark"] .notif-panel-header {
+        background: rgba(255,255,255,0.03);
+    }
+    .notif-panel-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--text-secondary);
+    }
+    .notif-mark-all-btn {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--primary-light);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: color var(--transition-fast);
+    }
+    .notif-mark-all-btn:hover { color: var(--primary-hover); text-decoration: underline; }
+
+    /* Notification list */
+    .notif-list {
+        max-height: 18rem;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
+    }
+    .notif-list::-webkit-scrollbar      { width: 4px; }
+    .notif-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+    /* Individual notification item */
+    .notif-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background var(--transition-fast);
+        position: relative;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: var(--bg-main); }
+    [data-theme="dark"] .notif-item:hover { background: rgba(255,255,255,0.04); }
+
+    /* Unread item — slightly highlighted background */
+    .notif-item:not(.notif-item--read) {
+        background: rgba(59, 130, 246, 0.04);
+    }
+    .notif-item:not(.notif-item--read):hover {
+        background: rgba(59, 130, 246, 0.08);
+    }
+
+    /* Read item — muted */
+    .notif-item--read .notif-item-msg  { font-weight: 400; color: var(--text-muted); }
+    .notif-item--read .notif-item-time { opacity: 0.6; }
+
+    /* Icon circle */
+    .notif-item-icon {
+        width: 2.1rem;
+        height: 2.1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+    .notif-icon--red    { background: var(--critical-red-light);  color: var(--critical-red); }
+    .notif-icon--blue   { background: rgba(59,130,246,0.1);        color: var(--primary-light); }
+    .notif-icon--teal   { background: var(--accent-teal-light);    color: var(--accent-teal); }
+    .notif-icon--amber  { background: var(--warning-amber-light);  color: var(--warning-amber); }
+
+    /* Text body */
+    .notif-item-body { flex: 1; min-width: 0; }
+    .notif-item-msg {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 0.2rem;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    .notif-item-time {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    /* Unread dot */
+    .notif-unread-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        flex-shrink: 0;
+        margin-top: 0.35rem;
+    }
+
+    /* Empty state */
+    .notif-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 2.5rem 1rem;
+        color: var(--text-muted);
+    }
+    .notif-empty-icon { font-size: 2rem; color: var(--accent-teal); }
+    .notif-empty p    { font-size: 0.85rem; font-weight: 600; margin: 0; }
+    </style>
   </body>
 </html>

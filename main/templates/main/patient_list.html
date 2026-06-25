@@ -1,69 +1,80 @@
 {% extends 'main/base.html' %}
 {% load static %}
- 
-    
 
 {% block contentTitle %}
-    Patient List 
-
-
+    Patient List
 {% endblock contentTitle %}
 
 {% block content %}
 
-    {% comment %} 1)name, 2)bed number, 3)status: critical, less crtical, recovering, recovered
-        4)edit option, will display modal that will contain, bed number will change to NA once recovered 
-     {% endcomment %}
+{% if messages %}
+<div class="mb-3">
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
 
-    <!-- Topbar Search -->
-    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search mb-3" method="GET" id="list">
-        <div class="input-group">
-        {{myFilter.form}}
-
-            {% comment %} <input type="text" class="form-control bg-light border-0 small" placeholder="Search patient..." {% endcomment %}
-                {% comment %} id="searchPatient"> {% endcomment %}
-            <div class="input-group-append">
-                <button class="btn btn-primary btn-block" type="submit">
-                    <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
+<!-- Search / Filter Form -->
+<form class="d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search mb-3"
+      method="GET" id="patientFilterForm">
+    <div class="input-group">
+        {{ myFilter.form }}
+        <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-search fa-sm"></i>
+            </button>
         </div>
-    </form>
-    
-     <div class="table-responsive mt-3">
-        <table class="table table-hover">
-            <thead>
-                <th><h3>Name</h3></th>
-                <th><h3>Bed no</h3></th>
-                <th><h3>Status</h3></th>
-                <th><h3>Edit</h3></th>
-            </thead>
-
-            <tbody>
-                {% for patient in patients %}
-
-                <tr class="mx-auto">
-                    <td scope="row"><h5>{{ patient.name }}</h5></td>
-                    <td><h5>{{ patient.bed_num }}</h5></td>
-                    <td><h5>{{ patient.status }}</h5></td>
-                    <td><a href="/patient/{{patient.id}}" class="btn btn-purple"><h5>Update</h5></a></td>
-                </tr>
-    
-                {% endfor %}
-                
-            </tbody>
-        </table>
-    
     </div>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-{% comment %} <script> 
-    $( function() {
-    
-    $( "#searchPatient" ).autocomplete({
-      source: '{% url "autocomplete" %}'
-    });
-  } );
-</script>
-{% endcomment %}
+</form>
+
+<div class="table-responsive mt-3">
+    <table class="table table-hover" id="patientTable">
+        <thead>
+            <tr>
+                <th><h5>Name</h5></th>
+                <th><h5>Bed No.</h5></th>
+                <th><h5>Doctor</h5></th>
+                <th><h5>Status</h5></th>
+                <th><h5>Action</h5></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in patients %}
+            <tr>
+                <td><h6>{{ p.name }}</h6></td>
+                <td><h6>{{ p.bed_num }}</h6></td>
+                <td><h6>{{ p.doctor }}</h6></td>
+                <td>
+                    <span class="badge
+                        {% if p.status == 'Critical' %}badge-danger
+                        {% elif p.status == 'Recovering' %}badge-warning
+                        {% elif p.status == 'Recovered' %}badge-success
+                        {% elif p.status == 'Deceased' %}badge-secondary
+                        {% else %}badge-info{% endif %}
+                        p-2" style="font-size:0.9rem;">
+                        {{ p.status }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'patient' pk=p.id %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit mr-1"></i> Update
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="fas fa-user-slash fa-2x mb-2"></i><br>
+                    No patients found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 {% endblock content %}

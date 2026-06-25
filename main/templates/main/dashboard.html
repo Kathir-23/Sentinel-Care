@@ -1,147 +1,438 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block contentTitle %}
-    Dashboard
-{% endblock contentTitle %}
+{% block title %}HMS — Dashboard{% endblock %}
+
+{% block breadcrumb %}Overview{% endblock %}
 
 {% block content %}
-    <div class="container-fluid">
-        <!-- Content Row -->
-        <div class="row">
-            <!-- Recover Card -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                    Recovered</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ recovered_count }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-heart fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- admitted card -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-info shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Admitted</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ patient_count }}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-stethoscope fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- ─── DASHBOARD HERO & GREETING ─── -->
+<div class="dashboard-hero">
+    <div class="dashboard-title-area">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, <strong>{{ request.user.first_name }} {{ request.user.last_name }}</strong>. Here's a real-time summary of your hospital's operations.</p>
+    </div>
+    <div class="dashboard-date-badge">
+        <i class="far fa-calendar-alt"></i>
+        <span id="live-clock">Loading time...</span>
+    </div>
+</div>
 
-            <!-- dead Card  -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-danger shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Deceased
-                                </div>
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{deceased_count}}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-book-dead fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pending Requests Card -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Pending Requests</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-comments fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- bed availability -->
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-blue text-uppercase mb-1">
-                                    Bed availability</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{beds_available}}</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-bed fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-4 col-md-6 col-sm-12 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-blue text-uppercase mb-1">
-                                    ventilator availability</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">160</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-ambulance fa-2x text-gray-300"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!-- ─── CRITICAL ALERTS BANNER ─── -->
+<div class="critical-alerts-container">
+    {% if critical_patients %}
+    <div class="alert-banner-custom">
+        <div class="alert-banner-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <p>CRITICAL ALERT: {{ critical_patients.count }} Patient(s) in Critical Condition</p>
+                <span style="font-size: 0.8rem; opacity: 0.9;">
+                    Patients: {% for p in critical_patients %}{{ p.name }} (Bed {{ p.bed_num }}){% if not forloop.last %}, {% endif %}{% endfor %}
+                </span>
             </div>
         </div>
+        <a href="{% url 'patient_list' %}?status=Critical" class="alert-banner-action text-decoration-none">
+            <i class="fas fa-arrow-right mr-1"></i> Review Patients
+        </a>
+    </div>
+    {% else %}
+    <div class="alert-banner-success">
+        <i class="fas fa-check-circle"></i>
+        <span>All systems normal. No critical patient alerts at this time.</span>
+    </div>
+    {% endif %}
+</div>
 
-        <div><h3 class="font-weight-bold my-3">Beds availability</h3></div>
-        <div class="row">
-            <!-- .bg-success.grid-box.my-2.mx-2  -->
-            {% comment %} <div class="bg-success grid-box my-2 mx-2 py-3 px-3"> {% endcomment %}
-            {% comment %} </div> {% endcomment %}
-
-            {% for bed in beds %}
-                <div class="
-                
-                
-                {% if bed.occupied == True %}
-                bg-danger 
-                {% elif bed.occupied == False %}
-                bg-success
-                {% endif %}
-                
-                
-                grid-box my-2 mx-2 py-3 px-3 text-white">{{ bed }}</div>
-            {% endfor %}
-            
+<!-- ─── QUICK STATS MINI-BAR ─── -->
+<div class="quick-stats-row">
+    <div class="quick-stat-mini">
+        <div class="quick-stat-mini-icon">
+            <i class="fas fa-user-check"></i>
+        </div>
+        <div class="quick-stat-mini-info">
+            <h4>42</h4>
+            <p>Patients Today</p>
         </div>
     </div>
+    <div class="quick-stat-mini">
+        <div class="quick-stat-mini-icon">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="quick-stat-mini-info">
+            <h4>8</h4>
+            <p>Procedures Scheduled</p>
+        </div>
+    </div>
+    <div class="quick-stat-mini">
+        <div class="quick-stat-mini-icon">
+            <i class="fas fa-user-md"></i>
+        </div>
+        <div class="quick-stat-mini-info">
+            <h4>15</h4>
+            <p>Staff On Duty</p>
+        </div>
+    </div>
+    <div class="quick-stat-mini">
+        <div class="quick-stat-mini-icon">
+            <i class="fas fa-percentage"></i>
+        </div>
+        <div class="quick-stat-mini-info">
+            <h4>{{ occupancy_percentage }}%</h4>
+            <p>Bed Occupancy Rate</p>
+        </div>
+    </div>
+</div>
+
+<!-- ─── MAIN METRIC CARDS ─── -->
+<div class="metric-cards-grid">
+    <!-- Recovered Card -->
+    <div class="metric-card-custom recovered">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Recovered</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">{{ recovered_count }}</span>
+            <span class="metric-card-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 12%
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Patients successfully discharged
+        </div>
+    </div>
+
+    <!-- Admitted Card -->
+    <div class="metric-card-custom admitted">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Admitted</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-stethoscope"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">{{ patient_count }}</span>
+            <span class="metric-card-trend trend-up">
+                <i class="fas fa-arrow-up"></i> 4%
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Active inpatients under treatment
+        </div>
+    </div>
+
+    <!-- Deceased Card -->
+    <div class="metric-card-custom deceased">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Deceased</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-book-dead"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">{{ deceased_count }}</span>
+            <span class="metric-card-trend trend-down">
+                <i class="fas fa-arrow-down"></i> 0%
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Total mortalities recorded
+        </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="metric-card-custom pending">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Pending Requests</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-comments"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">20</span>
+            <span class="metric-card-trend trend-up" style="color: var(--warning-amber);">
+                <i class="fas fa-clock"></i> High
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Incoming transfer & booking requests
+        </div>
+    </div>
+
+    <!-- Bed Availability -->
+    <div class="metric-card-custom available">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Bed Availability</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-bed"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">{{ beds_available }}</span>
+            <span class="metric-card-trend trend-up">
+                <i class="fas fa-arrow-up"></i> {{ beds_available }} open
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Clean & available beds across all wards
+        </div>
+    </div>
+
+    <!-- Ventilator Availability -->
+    <div class="metric-card-custom ventilator">
+        <div class="metric-card-header">
+            <span class="metric-card-title">Ventilators</span>
+            <div class="metric-card-icon-wrap">
+                <i class="fas fa-ambulance"></i>
+            </div>
+        </div>
+        <div class="metric-card-body">
+            <span class="metric-card-number">160</span>
+            <span class="metric-card-trend trend-up">
+                <i class="fas fa-check"></i> Stable
+            </span>
+        </div>
+        <div class="metric-card-footer">
+            Standby ICU life support inventory
+        </div>
+    </div>
+</div>
+
+<!-- ─── BEDS GRID VISUALIZATION ─── -->
+<div class="beds-section-container">
+    <div class="beds-header-row">
+        <h4 class="m-0"><i class="fas fa-hospital-symbol text-primary-light mr-2"></i>Bed Allotment Grid</h4>
+        
+        <!-- Filter Controls -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-primary btn-sm active filter-bed-btn" data-filter="all">
+                    <input type="radio" name="bed-filter" checked> All Wards
+                </label>
+                <label class="btn btn-outline-success btn-sm filter-bed-btn" data-filter="available">
+                    <input type="radio" name="bed-filter"> Available
+                </label>
+                <label class="btn btn-outline-danger btn-sm filter-bed-btn" data-filter="occupied">
+                    <input type="radio" name="bed-filter"> Occupied
+                </label>
+            </div>
+            
+            <span class="text-muted d-none d-sm-inline" style="font-size: 0.85rem; font-weight: 600;">
+                Total: {{ beds.count }} | Available: {{ beds_available }} | Occupied: {{ beds_occupied }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Legend Indicator -->
+    <div class="beds-legend mb-3">
+        <div class="legend-item">
+            <div class="legend-color legend-available"></div>
+            <span>Available ({{ beds_available }})</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color legend-occupied"></div>
+            <span>Occupied ({{ beds_occupied }})</span>
+        </div>
+    </div>
+
+    <!-- Ward Wise Tabbed Layout or Groups -->
+    <div class="row">
+        <!-- Ward A -->
+        <div class="col-md-6 mb-4 ward-block">
+            <div class="ward-title">Ward A (General Wards)</div>
+            <div class="beds-grid-custom">
+                {% for bed in beds %}
+                    {% if 'A' in bed.bed_number %}
+                        <div class="bed-box-interactive {% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-bed-type="{% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-toggle="tooltip" 
+                             data-placement="top"
+                             data-tooltip="Bed {{ bed.bed_number }} — {% if bed.occupied %}Occupied{% else %}Available (Clean){% endif %}">
+                            {{ bed.bed_number }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ward B -->
+        <div class="col-md-6 mb-4 ward-block">
+            <div class="ward-title">Ward B (Intensive Care Unit)</div>
+            <div class="beds-grid-custom">
+                {% for bed in beds %}
+                    {% if 'B' in bed.bed_number %}
+                        <div class="bed-box-interactive {% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-bed-type="{% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-toggle="tooltip" 
+                             data-placement="top"
+                             data-tooltip="Bed {{ bed.bed_number }} — {% if bed.occupied %}Occupied{% else %}Available (Clean){% endif %}">
+                            {{ bed.bed_number }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ward C -->
+        <div class="col-md-6 mb-4 ward-block">
+            <div class="ward-title">Ward C (Maternity & Pediatrics)</div>
+            <div class="beds-grid-custom">
+                {% for bed in beds %}
+                    {% if 'C' in bed.bed_number %}
+                        <div class="bed-box-interactive {% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-bed-type="{% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-toggle="tooltip" 
+                             data-placement="top"
+                             data-tooltip="Bed {{ bed.bed_number }} — {% if bed.occupied %}Occupied{% else %}Available (Clean){% endif %}">
+                            {{ bed.bed_number }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ward D -->
+        <div class="col-md-6 mb-4 ward-block">
+            <div class="ward-title">Ward D (Isolation & VIP Rooms)</div>
+            <div class="beds-grid-custom">
+                {% for bed in beds %}
+                    {% if 'D' in bed.bed_number %}
+                        <div class="bed-box-interactive {% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-bed-type="{% if bed.occupied %}occupied{% else %}available{% endif %}"
+                             data-toggle="tooltip" 
+                             data-placement="top"
+                             data-tooltip="Bed {{ bed.bed_number }} — {% if bed.occupied %}Occupied{% else %}Available (Clean){% endif %}">
+                            {{ bed.bed_number }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SECONDARY DASHBOARD INFO BLOCKS (QUEUE, APPOINTMENTS, ROSTER) ─── -->
+<div class="dashboard-details-grid">
+    
+    <!-- 1. Patient Queue / Preview -->
+    <div class="dashboard-section-card">
+        <div class="section-card-header">
+            <span class="section-card-title"><i class="fas fa-users"></i> Recent Patient Influx</span>
+            <a href="{% url 'patient_list' %}" class="btn btn-link btn-sm p-0 text-decoration-none font-weight-bold">View All</a>
+        </div>
+        <div class="patient-preview-list">
+            {% for p in patient_preview %}
+            <div class="patient-preview-row" onclick="window.location.href='{% url 'patient' pk=p.id %}'">
+                <div class="patient-preview-info">
+                    <div class="patient-preview-avatar">
+                        {{ p.name|slice:":2"|upper }}
+                    </div>
+                    <div class="patient-preview-name">
+                        <h6>{{ p.name }}</h6>
+                        <p>Bed: {{ p.bed_num }} | Dr. {{ p.doctor.name|slice:":15" }}...</p>
+                    </div>
+                </div>
+                <span class="badge badge-custom 
+                    {% if p.status == 'Critical' %}danger
+                    {% elif p.status == 'Recovering' %}warning
+                    {% elif p.status == 'Recovered' %}success
+                    {% else %}primary{% endif %}">
+                    {{ p.status }}
+                </span>
+            </div>
+            {% empty %}
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-user-friends fa-2x mb-2" style="opacity: 0.5;"></i>
+                <p class="m-0" style="font-size: 0.85rem;">No active patients admitted yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 2. Upcoming Appointments -->
+    <div class="dashboard-section-card">
+        <div class="section-card-header">
+            <span class="section-card-title"><i class="fas fa-calendar-alt"></i> Today's Schedule</span>
+            <span class="badge badge-primary p-2" style="border-radius:20px; font-size: 0.75rem;">{{ appointments|length }} Left</span>
+        </div>
+        <div class="appointments-list">
+            {% for app in appointments %}
+            <div class="appointment-card {{ app.type_color }}">
+                <div class="appointment-info">
+                    <h6>{{ app.patient }}</h6>
+                    <p><i class="fas fa-user-md mr-1"></i> {{ app.doctor }}</p>
+                </div>
+                <div class="appointment-time-badge">
+                    <h6>{{ app.time }}</h6>
+                    <p><i class="fas fa-map-marker-alt mr-1"></i> Room {{ app.room }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 3. Staff On Duty Roster -->
+    <div class="dashboard-section-card">
+        <div class="section-card-header">
+            <span class="section-card-title"><i class="fas fa-clipboard-list"></i> Staff Roster (Live)</span>
+            <span class="badge badge-success p-2" style="border-radius:20px; font-size:0.75rem;"><i class="fas fa-circle mr-1" style="font-size: 0.5rem;"></i> Syncing</span>
+        </div>
+        <div class="staff-roster-list">
+            {% for staff in staff_on_duty %}
+            <div class="staff-roster-row">
+                <div class="staff-roster-info">
+                    <h6>{{ staff.name }}</h6>
+                    <p>{{ staff.role }}</p>
+                </div>
+                <div class="staff-status-indicator">
+                    <div class="status-dot {{ staff.status_color }}"></div>
+                    <span>{{ staff.status }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- ─── DASHBOARD LIVE CLOCK & BED GRID FILTER SCRIPTS ─── -->
+<script>
+    $(function() {
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
+            $('#live-clock').text(now.toLocaleDateString('en-US', options));
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Interactive Bed Grid Filtering
+        $('.filter-bed-btn').on('click', function() {
+            const filterValue = $(this).data('filter');
+            
+            if (filterValue === 'all') {
+                $('.bed-box-interactive').show().css('opacity', '1');
+            } else if (filterValue === 'available') {
+                $('.bed-box-interactive[data-bed-type="available"]').show().css('opacity', '1');
+                $('.bed-box-interactive[data-bed-type="occupied"]').hide();
+            } else if (filterValue === 'occupied') {
+                $('.bed-box-interactive[data-bed-type="occupied"]').show().css('opacity', '1');
+                $('.bed-box-interactive[data-bed-type="available"]').hide();
+            }
+        });
+    });
+</script>
 
 {% endblock content %}

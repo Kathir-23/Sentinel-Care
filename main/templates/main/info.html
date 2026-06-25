@@ -1,100 +1,616 @@
+{% extends 'main/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-        />
+{% block title %}HMS — Care Info Hub{% endblock %}
+{% block breadcrumb %}Care Info Hub{% endblock %}
 
-        <!-- jquery -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+{% block content %}
 
-        <!-- bootstrap  -->
-        
-        <link
-        rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-        crossorigin="anonymous"
-        />
-        
-        <!-- font-awesome -->
-        <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-        integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog=="
-        crossorigin="anonymous"
-        />
-        
-        
-        <!-- google api font -->
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Page Header -->
+<div class="ci-page-header">
+  <div class="ci-header-text">
+    <div class="ci-header-eyebrow">
+      <i class="fas fa-shield-virus mr-2"></i> Clinical Reference
+    </div>
+    <h2 class="ci-page-title">Covid-19 Care Guidelines</h2>
+    <p class="ci-page-subtitle">
+      Official safety protocols, isolation guidance, and emergency procedures for hospital staff and visitors.
+    </p>
+  </div>
+  <div class="ci-header-meta">
+    <div class="ci-meta-badge">
+      <i class="fas fa-calendar-check mr-1"></i>
+      Last reviewed: June 2024
+    </div>
+    <div class="ci-source-line">
+      Source: Ministry of Health &amp; Family Welfare, Govt. of India &amp; WHO
+    </div>
+  </div>
+</div>
 
-        {% comment %} <link rel="stylesheet" href="info.css"> {% endcomment %}
-        <link rel="stylesheet" href="{% static 'styles/info.css' %}">
-        <title>Infomation Page</title>
-    </head>
+<!-- Quick Reference Icon Strip -->
+<div class="ci-quick-strip">
+  <div class="ci-quick-item">
+    <div class="ci-quick-icon ci-quick-icon--teal">
+      <i class="fas fa-head-side-mask"></i>
+    </div>
+    <span>Wear Mask</span>
+  </div>
+  <div class="ci-quick-item">
+    <div class="ci-quick-icon ci-quick-icon--blue">
+      <i class="fas fa-hands-wash"></i>
+    </div>
+    <span>Wash Hands</span>
+  </div>
+  <div class="ci-quick-item">
+    <div class="ci-quick-icon ci-quick-icon--amber">
+      <i class="fas fa-ruler-horizontal"></i>
+    </div>
+    <span>Keep Distance</span>
+  </div>
+  <div class="ci-quick-item">
+    <div class="ci-quick-icon ci-quick-icon--purple">
+      <i class="fas fa-home"></i>
+    </div>
+    <span>Stay Home if Ill</span>
+  </div>
+  <div class="ci-quick-item">
+    <div class="ci-quick-icon ci-quick-icon--red">
+      <i class="fas fa-phone-alt"></i>
+    </div>
+    <span>Report Symptoms</span>
+  </div>
+</div>
 
-    <body>
-        <div class="title-body">
-            <a href="">Home</a>
-            <h3>Covid 19 Information</h3>
-            <div class="heading">
-                <p>
-                    Stay Home.<br>
-                    Stay Safe.
-                </p>
-            </div>
-            <img src="{% static 'images/people-wearing-mask.png' %}" alt="">
-            <img href={% static 'images/WHO.svg' %}></img>
+<!-- ── ALERT NOTICE ── -->
+<div class="ci-notice-banner">
+  <i class="fas fa-exclamation-circle ci-notice-icon"></i>
+  <div>
+    <strong>Staff Advisory:</strong> All patient-facing staff must follow full PPE protocol in isolation wards.
+    Refer to Section 4 (Isolation Protocol) below for detailed ward-level requirements.
+  </div>
+</div>
+
+<!-- ── CONTENT GRID ── -->
+<div class="ci-content-grid">
+
+  <!-- Section 1: Prevention -->
+  <div class="ci-card ci-card--teal">
+    <div class="ci-card-header">
+      <div class="ci-card-icon-wrap ci-card-icon-wrap--teal">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div>
+        <h3 class="ci-card-title">Prevention Guidelines</h3>
+        <p class="ci-card-subtitle">Daily protective measures for all staff</p>
+      </div>
+    </div>
+    <div class="ci-card-body">
+      <ul class="ci-list">
+        <li>Wear a 3-ply or N95 mask at all times in clinical areas.</li>
+        <li>Maintain at least 1 metre physical distance from patients and colleagues where possible.</li>
+        <li>Wash hands with soap for at least 20 seconds or use 70%+ alcohol-based sanitiser after each patient contact.</li>
+        <li>Avoid touching eyes, nose, or mouth with unwashed hands.</li>
+        <li>Ensure adequate ventilation in all shared spaces — open windows where safe to do so.</li>
+        <li>Do not attend work if you have fever, cough, or any Covid-19 symptoms — notify the duty manager immediately.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 2: Symptoms -->
+  <div class="ci-card ci-card--amber">
+    <div class="ci-card-header">
+      <div class="ci-card-icon-wrap ci-card-icon-wrap--amber">
+        <i class="fas fa-thermometer-three-quarters"></i>
+      </div>
+      <div>
+        <h3 class="ci-card-title">Symptom Reference</h3>
+        <p class="ci-card-subtitle">Recognise and triage early</p>
+      </div>
+    </div>
+    <div class="ci-card-body">
+      <p class="ci-section-label">Common Onset Symptoms</p>
+      <ul class="ci-list ci-list--common">
+        <li>Fever or chills</li>
+        <li>Dry cough</li>
+        <li>Tiredness or fatigue</li>
+        <li>Loss of taste or smell</li>
+        <li>Sore throat</li>
+      </ul>
+      <p class="ci-section-label ci-section-label--amber mt-3">Less Common / Moderate</p>
+      <ul class="ci-list ci-list--amber">
+        <li>Aches and body pains</li>
+        <li>Diarrhoea or nausea</li>
+        <li>Conjunctivitis (pink eye)</li>
+        <li>Headache</li>
+      </ul>
+      <p class="ci-section-label ci-section-label--red mt-3">Serious — Seek Immediate Medical Attention</p>
+      <ul class="ci-list ci-list--red">
+        <li>Difficulty breathing or shortness of breath</li>
+        <li>Chest pain or persistent pressure</li>
+        <li>Loss of speech or movement</li>
+        <li>Confusion or altered consciousness</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 3: PPE Protocol -->
+  <div class="ci-card ci-card--blue">
+    <div class="ci-card-header">
+      <div class="ci-card-icon-wrap ci-card-icon-wrap--blue">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <div>
+        <h3 class="ci-card-title">PPE Protocol</h3>
+        <p class="ci-card-subtitle">Personal Protective Equipment standards</p>
+      </div>
+    </div>
+    <div class="ci-card-body">
+      <div class="ci-ppe-grid">
+        <div class="ci-ppe-item">
+          <i class="fas fa-head-side-mask ci-ppe-icon"></i>
+          <strong>N95 Mask</strong>
+          <span>Isolation wards &amp; ICU</span>
         </div>
-        
-        <div class="background-image"></div>
+        <div class="ci-ppe-item">
+          <i class="fas fa-glasses ci-ppe-icon"></i>
+          <strong>Face Shield</strong>
+          <span>During aerosol-generating procedures</span>
+        </div>
+        <div class="ci-ppe-item">
+          <i class="fas fa-mitten ci-ppe-icon"></i>
+          <strong>Gloves</strong>
+          <span>Change between every patient</span>
+        </div>
+        <div class="ci-ppe-item">
+          <i class="fas fa-tshirt ci-ppe-icon"></i>
+          <strong>Gown / Apron</strong>
+          <span>Fluid-resistant; dispose after each use</span>
+        </div>
+      </div>
+      <div class="ci-note mt-3">
+        <i class="fas fa-info-circle mr-1"></i>
+        Donning and doffing must follow the hospital's established sequence. Refer to the infection control poster in each ward.
+      </div>
+    </div>
+  </div>
 
-        <div class="container">
-            <div class=" row">
-                <div class="col-12 col-md-6 col-xl-6">
-                    <div class="item-container">
-                        <img src="{% static 'images/WHO.svg' %}" alt="">
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-xl-6">
-                    <a class="d-flex flex-column align-items-center justify-content-center p-3 block" href="">
-                    <div class="label">WHO</div>
-                    <div class="description">Check out the latest guidelines set by the World Health Organisation.</div>
-                    </a>
-                </div>
-                <div class="col-12 col-md-6 col-xl-6">
-                    <a class="d-flex flex-column align-items-center justify-content-center p-3 block" href="">
-                    <div class="label">GOOGLE</div>
-                    <div class="description">Do the Five!</div>
-                    </a>
-                </div>
-                <div class="col-12 col-md-6 col-xl-6">
-                    <div class="item-container">
-                        <img src="{% static 'images/DotheFive.jpg' %}" alt="">
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-xl-6">
-                    <div class="item-container">
-                        <img src="{% static 'images/national-emblem-of-india.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-xl-6">
-                    <a class="d-flex flex-column align-items-center justify-content-center p-3 block" href="">
-                    <div class="label">Government of India</div>
-                    <div class="description">Guidelines given by the gov. of India.</div>
-                    </a>
-                </div>
-            </div>
-        </div>          
-    </body>
+  <!-- Section 4: Isolation Protocol -->
+  <div class="ci-card ci-card--red">
+    <div class="ci-card-header">
+      <div class="ci-card-icon-wrap ci-card-icon-wrap--red">
+        <i class="fas fa-procedures"></i>
+      </div>
+      <div>
+        <h3 class="ci-card-title">Isolation Protocol</h3>
+        <p class="ci-card-subtitle">Ward-level containment procedures</p>
+      </div>
+    </div>
+    <div class="ci-card-body">
+      <ul class="ci-list">
+        <li>Confirmed or suspected Covid-19 patients must be admitted to a designated isolation ward immediately.</li>
+        <li>Single-occupancy rooms with negative pressure are preferred for confirmed cases.</li>
+        <li>Restrict movement — patient leaves the room only for essential clinical procedures.</li>
+        <li>Limit the number of staff entering the isolation room; assign a dedicated nursing team where possible.</li>
+        <li>All visitors are prohibited unless approved by the attending physician; visits are limited to 30 minutes with full PPE.</li>
+        <li>Inform the Infection Control Officer within 1 hour of a confirmed diagnosis.</li>
+        <li>Conduct terminal disinfection of the room after patient discharge or transfer.</li>
+      </ul>
+    </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+</div><!-- /ci-content-grid -->
 
-</html>
+<!-- ── EXTERNAL SOURCES SECTION ── -->
+<div class="ci-card ci-card--neutral mt-0 mb-4">
+  <div class="ci-card-header">
+    <div class="ci-card-icon-wrap ci-card-icon-wrap--neutral">
+      <i class="fas fa-external-link-alt"></i>
+    </div>
+    <div>
+      <h3 class="ci-card-title">Official Sources &amp; References</h3>
+      <p class="ci-card-subtitle">For the latest national and international guidance</p>
+    </div>
+  </div>
+  <div class="ci-card-body">
+    <div class="ci-sources-grid">
+
+      <a href="https://www.mohfw.gov.in/" target="_blank" rel="noopener noreferrer" class="ci-source-card">
+        <div class="ci-source-logo">
+          <img src="{% static 'images/national-emblem-of-india.png' %}" alt="Government of India" class="ci-source-img">
+        </div>
+        <div class="ci-source-info">
+          <strong>Ministry of Health &amp; Family Welfare</strong>
+          <span>Government of India — Covid-19 Guidelines &amp; Advisories</span>
+          <span class="ci-source-url">mohfw.gov.in <i class="fas fa-external-link-alt ml-1"></i></span>
+        </div>
+      </a>
+
+      <a href="https://www.who.int/emergencies/diseases/novel-coronavirus-2019" target="_blank" rel="noopener noreferrer" class="ci-source-card">
+        <div class="ci-source-logo">
+          <img src="{% static 'images/WHO.svg' %}" alt="WHO" class="ci-source-img">
+        </div>
+        <div class="ci-source-info">
+          <strong>World Health Organisation</strong>
+          <span>Global Covid-19 emergency hub, clinical guidance &amp; situation reports</span>
+          <span class="ci-source-url">who.int <i class="fas fa-external-link-alt ml-1"></i></span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── EMERGENCY CONTACTS ── -->
+<div class="ci-card ci-card--emergency mb-5">
+  <div class="ci-card-header">
+    <div class="ci-card-icon-wrap ci-card-icon-wrap--red">
+      <i class="fas fa-phone-volume"></i>
+    </div>
+    <div>
+      <h3 class="ci-card-title">Emergency &amp; Helpline Contacts</h3>
+      <p class="ci-card-subtitle">National and hospital-level escalation numbers</p>
+    </div>
+  </div>
+  <div class="ci-card-body">
+    <div class="ci-contacts-grid">
+      <div class="ci-contact-item">
+        <span class="ci-contact-label">National Covid Helpline</span>
+        <span class="ci-contact-number">1075</span>
+        <span class="ci-contact-note">24×7 · Government of India</span>
+      </div>
+      <div class="ci-contact-item">
+        <span class="ci-contact-label">State Helpline (Example)</span>
+        <span class="ci-contact-number">104</span>
+        <span class="ci-contact-note">Health helpline across most Indian states</span>
+      </div>
+      <div class="ci-contact-item">
+        <span class="ci-contact-label">Infection Control Officer</span>
+        <span class="ci-contact-number">Ext. 2210</span>
+        <span class="ci-contact-note">Internal — available 08:00–20:00</span>
+      </div>
+      <div class="ci-contact-item">
+        <span class="ci-contact-label">Hospital Emergency</span>
+        <span class="ci-contact-number">Ext. 100</span>
+        <span class="ci-contact-note">Internal — 24×7 on-call</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page-scoped styles -->
+<style>
+/* ============================================================
+   CARE INFO HUB — scoped with ci- prefix
+   Pulls existing HMS design tokens; no new library introduced.
+============================================================ */
+
+/* Page header */
+.ci-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ci-header-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-teal);
+  margin-bottom: 0.35rem;
+}
+
+.ci-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin: 0 0 0.35rem;
+  color: var(--text-primary);
+}
+
+.ci-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 540px;
+}
+
+.ci-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.ci-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent-teal-light);
+  color: var(--accent-teal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  border: 1px solid rgba(0,168,150,0.25);
+}
+
+.ci-source-line {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* Quick icon strip */
+.ci-quick-strip {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.ci-quick-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 80px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.ci-quick-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.ci-quick-icon--teal   { background: var(--accent-teal-light);          color: var(--accent-teal); }
+.ci-quick-icon--blue   { background: rgba(59,130,246,0.1);               color: var(--primary-light); }
+.ci-quick-icon--amber  { background: var(--warning-amber-light);         color: var(--warning-amber); }
+.ci-quick-icon--purple { background: rgba(139,92,246,0.1);               color: #7C3AED; }
+.ci-quick-icon--red    { background: var(--critical-red-light);          color: var(--critical-red); }
+
+/* Alert notice banner */
+.ci-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--warning-amber-light);
+  border-left: 4px solid var(--warning-amber);
+  border-radius: var(--border-radius);
+  padding: 0.9rem 1.25rem;
+  color: #92400E;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-bottom: 1.75rem;
+}
+[data-theme="dark"] .ci-notice-banner { color: var(--warning-amber); }
+.ci-notice-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; color: var(--warning-amber); }
+
+/* 2-column content grid */
+.ci-content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+@media (max-width: 768px) { .ci-content-grid { grid-template-columns: 1fr; } }
+
+/* Cards */
+.ci-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal);
+}
+.ci-card:hover { box-shadow: var(--shadow-lg); }
+
+/* Coloured left accent */
+.ci-card--teal    { border-left: 4px solid var(--accent-teal); }
+.ci-card--amber   { border-left: 4px solid var(--warning-amber); }
+.ci-card--blue    { border-left: 4px solid var(--primary-light); }
+.ci-card--red     { border-left: 4px solid var(--critical-red); }
+.ci-card--neutral { border-left: 4px solid var(--text-muted); }
+.ci-card--emergency { border-left: 4px solid var(--critical-red); }
+
+.ci-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-main);
+}
+[data-theme="dark"] .ci-card-header { background: rgba(255,255,255,0.03); }
+
+.ci-card-icon-wrap {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+.ci-card-icon-wrap--teal    { background: var(--accent-teal-light);  color: var(--accent-teal); }
+.ci-card-icon-wrap--amber   { background: var(--warning-amber-light); color: var(--warning-amber); }
+.ci-card-icon-wrap--blue    { background: rgba(59,130,246,0.1);       color: var(--primary-light); }
+.ci-card-icon-wrap--red     { background: var(--critical-red-light);  color: var(--critical-red); }
+.ci-card-icon-wrap--neutral { background: rgba(107,114,128,0.1);      color: var(--text-muted); }
+
+.ci-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--text-primary);
+}
+.ci-card-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+.ci-card-body { padding: 1.25rem; }
+
+/* Lists */
+.ci-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ci-list li {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+.ci-list--red    li { color: #991B1B; }
+.ci-list--amber  li { color: #92400E; }
+[data-theme="dark"] .ci-list--red   li { color: var(--critical-red); }
+[data-theme="dark"] .ci-list--amber li { color: var(--warning-amber); }
+
+.ci-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+.ci-section-label--amber { color: var(--warning-amber); }
+.ci-section-label--red   { color: var(--critical-red); }
+
+/* PPE Grid */
+.ci-ppe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 480px) { .ci-ppe-grid { grid-template-columns: 1fr; } }
+
+.ci-ppe-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.3rem;
+  padding: 0.9rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(59,130,246,0.05);
+  border: 1px solid rgba(59,130,246,0.12);
+}
+.ci-ppe-icon { font-size: 1.6rem; color: var(--primary-light); margin-bottom: 0.2rem; }
+.ci-ppe-item strong { font-size: 0.85rem; color: var(--text-primary); }
+.ci-ppe-item span   { font-size: 0.75rem; color: var(--text-muted); }
+
+/* Note box */
+.ci-note {
+  background: rgba(59,130,246,0.06);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  border: 1px solid rgba(59,130,246,0.15);
+}
+
+/* Sources grid */
+.ci-sources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 640px) { .ci-sources-grid { grid-template-columns: 1fr; } }
+
+.ci-source-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  background: var(--bg-main);
+}
+.ci-source-card:hover {
+  border-color: var(--accent-teal);
+  box-shadow: var(--shadow-md);
+  background: var(--accent-teal-light);
+  text-decoration: none;
+}
+.ci-source-logo {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ci-source-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.ci-source-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ci-source-info strong { font-size: 0.88rem; color: var(--text-primary); }
+.ci-source-info span   { font-size: 0.75rem; color: var(--text-secondary); }
+.ci-source-url {
+  font-size: 0.72rem !important;
+  color: var(--accent-teal) !important;
+  font-weight: 600;
+}
+
+/* Emergency contacts grid */
+.ci-contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (max-width: 640px) { .ci-contacts-grid { grid-template-columns: 1fr; } }
+
+.ci-contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: var(--critical-red-light);
+  border: 1px solid rgba(220,38,38,0.2);
+}
+.ci-contact-label  { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--critical-red); }
+.ci-contact-number { font-family: 'Roboto Mono', monospace; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); }
+.ci-contact-note   { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .ci-page-header { flex-direction: column; }
+  .ci-header-meta { align-items: flex-start; }
+  .ci-source-line { text-align: left; }
+}
+</style>
+
+{% endblock content %}

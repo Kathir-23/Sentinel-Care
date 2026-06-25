@@ -1,178 +1,702 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block contentTitle %}
-    {{patient.name}}, {{patient.bed_num}}
-{% endblock contentTitle %}
+{% block title %}HMS — {{ patient.name }}{% endblock %}
+{% block breadcrumb %}Patient Detail{% endblock %}
 
 {% block content %}
-    {% comment %} patient details at registration(profile card) {% endcomment %}
-    {% comment %} download btn {% endcomment %}
-    {% comment %} report file upload {% endcomment %}
 
-    {% comment %} <div class="row">
-  	<div class="col-md-3">
-	<!--left col-->
-		<div class="text-center">
-		<img
-			src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png"
-			class="avatar img-circle img-thumbnail"
-			alt="avatar"
-		/>
-		<h6>Upload a different photo...</h6>
-		<input type="file" class="text-center center-block file-upload" />
-		</div>
-	  </div> 
-	  {% endcomment %}
+{# ─── FLASH MESSAGES ─── #}
+{% if messages %}
+<div class="mb-4">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-lg shadow-sm" role="alert">
+    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-2"></i>
+    <strong>{{ message }}</strong>
+    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
-		<form class="form" action="" method="post" id="registrationForm">
-		{% csrf_token %}
-			<div class="container">
-				<div class="patient-form">
-					<div class="row">
-						<div class="col-md-4 form-field mt-4 mb-0">
-						<label for="mobile"><h6>Patient's contact</h6>
-						<input type="text" id="name" class="input-text" type="text" name="mobile" placeholder="Mobile No" value="{{patient.phone_num}}">
-						</label>
-						</div>
+{# ─── PAGE HEADER ─── #}
+<div class="pd-page-header">
+  <div>
+    <h2 class="pd-patient-name">{{ patient.name }}</h2>
+    <div class="d-flex align-items-center flex-wrap" style="gap: 0.5rem;">
 
-						<div class="offset-md-2 col-md-4 form-field mt-4 mb-0">
-						<label for="mobile" class="mb-0"><h6>Relative's contact</h6>
-						<input type="text" id="mobile2" class="input-text" type="text" name="mobile2" placeholder="Mobile No" value="{{patient.patient_relative_contact}}">
-						</label>
-						</div>
+      {# Live Status Badge #}
+      <span class="pd-status-badge pd-status-{{ patient.status|lower|cut:' ' }}">
+        <i class="fas
+          {% if patient.status == 'Critical' %}fa-exclamation-circle
+          {% elif patient.status == 'Recovering' %}fa-heartbeat
+          {% elif patient.status == 'Recovered' %}fa-check-circle
+          {% elif patient.status == 'Deceased' %}fa-times-circle
+          {% else %}fa-circle{% endif %} mr-1"></i>
+        {{ patient.status }}
+      </span>
 
-						<div class="form-field mt-4">
-						<label for="relativeName" class="mb-0"><h6>Relative's Name</h6>
-						<input
-							type="text"
-							class="input-text"
-							name="relativeName"
-							id="realtiveName"
-							value="{{patient.patient_relative_name}}"
-							/>
-						</label>
-						</div>
-					<!-- </div>	 -->
+      {# Live Bed Chip #}
+      <span class="pd-live-chip">
+        <i class="fas fa-bed mr-1"></i> Bed {{ patient.bed_num }}
+      </span>
 
-					<!-- <div class="row">	 -->
-						<div class="col-md-7 form-field mt-0">
-						<label for="address" class="mb-0 mt-0"><h6>Address</h6></label>
-						<input
-							type="address"
-							class="input-text"
-							id="location"
-							placeholder="address"
-							name="location"
-							title="enter a location"
-							value="{{patient.address}}"
-						/>
-						
-						</div>
-						<!-- </div> -->
-						
-						<div class="offset-md-1 col-md-4 form-field mt-0">
-							<label for="symptoms" class="mb-0"><h6>Symptoms</h6></label>
-							<input
-								type="text"
-								class="input-text"
-								name="symptons"
-								id="symptons"
-								value="{{patient.symptoms}}"
-							/>
-						</div>
-						
-						<div class="col-md-7">
-							<h6>Prior ailments</h6>
-							<label for="prior_ailments"><h4>{{patient.prior_ailments}}</h4></label>
-							
-						</div>
+      {# Assigned Doctor Chip #}
+      <span class="pd-live-chip pd-live-chip--doctor">
+        <i class="fas fa-user-md mr-1"></i> {{ patient.doctor }}
+      </span>
 
-						<div class="col-md-5">
-							<h6>Bed number</h6>
-							<label for="bed_num" class="mb-0">
-							<h4>{{patient.bed_num}}</h4>
-							</label>
-						</div>
+    </div>
+  </div>
 
-						<div class="col-md-6">
+  {# Back link #}
+  <a href="{% url 'patient_list' %}" class="pd-back-link">
+    <i class="fas fa-arrow-left mr-1"></i> Back to Patient List
+  </a>
+</div>
 
+{# ─── FORM ─── #}
+<form action="" method="post" id="patientUpdateForm" novalidate>
+  {% csrf_token %}
 
-						{% comment %} 
-						<label for="symptoms" class="mb-0"><h6>Symptoms</h6></label>
-							<input
-								type="text"
-								class="input-text"
-								name="symptons"
-								id="symptons"
-								value="{{patient.symptoms}}"
-							/>
-						 {% endcomment %}
-						 	<label for="status" class="mb-0">
-							<h6>Status</h6></label>
-							<input
-								type="text"
-								class="input-text"
-								name="status"
-								id="status"
-								value="{{patient.status}}"
-							/>
-							
-						</div>
+  <div class="pd-sections-grid">
 
-						<div class="col-md-6">
-							<label for="doctor" class="mb-0">
-							<h6>Doctor Assigned: </h6>
-							</label>
-							<input
-								type="text"
-								class="input-text"
-								name="doctor"
-								id="doctor"
-								value="{{patient.doctor}}"
-							/>
-						</div>
+    <!-- SECTION 1 — Patient & Relative Contact -->
+    <div class="pd-card">
+      <div class="pd-card-header">
+        <i class="fas fa-address-card pd-card-icon"></i>
+        <span>Contact Information</span>
+      </div>
+      <div class="pd-card-body">
+        <div class="pd-field-grid">
 
-						<div class="col-md-6">
-							<label for="doctor_time" class="mb-0 mt-4">
-							<h6>Doctor Visiting Time: </h6>
-							</label>
-							<input
-								type="text"
-								class="input-text"
-								name="doctor_time"
-								id="doctor_time"
-								value="{{patient.doctors_visiting_time}}"
-							/>
-						</div>
+          <div class="pd-field">
+            <label class="pd-label" for="mobile">
+              <i class="fas fa-mobile-alt pd-label-icon"></i> Patient's Contact
+            </label>
+            <input type="text" id="mobile" name="mobile" class="pd-input"
+                   placeholder="e.g. +91 98765 43210"
+                   value="{{ patient.phone_num }}">
+          </div>
 
-						<div class="col-md-6">
-							<label for="doctor_notes" class="mb-0 mt-4">
-							<h6>Doctor Notes: </h6>
-							</label>
-							<!-- <label for="bed_num"> -->
-							<textarea
-								class="input-text"
-								name="doctor_notes"
-								id="doctor_notes"
-								{{patient.doctors_notes}}
-							>{{patient.doctors_notes}}</textarea>
-						
-						</div>
+          <div class="pd-field">
+            <label class="pd-label" for="mobile2">
+              <i class="fas fa-phone pd-label-icon"></i> Relative's Contact
+            </label>
+            <input type="text" id="mobile2" name="mobile2" class="pd-input"
+                   placeholder="e.g. +91 98765 43211"
+                   value="{{ patient.patient_relative_contact }}">
+          </div>
 
-					</div>
-				</div>
-			</div>
-		
-		<div class="form-group">
-			<div class="col-md-5 mx-auto">
-			<br />
-			<button class="btn btn-lg btn-success btn-block mx-auto" type="submit">
-				<i class="glyphicon glyphicon-ok-sign"></i> Save
-			</button>
+          <div class="pd-field pd-field--full">
+            <label class="pd-label" for="relativeName">
+              <i class="fas fa-user-friends pd-label-icon"></i> Relative's Name
+            </label>
+            <input type="text" name="relativeName" id="relativeName" class="pd-input"
+                   placeholder="Full name of next of kin"
+                   value="{{ patient.patient_relative_name }}">
+          </div>
 
-			
-			</div>
-	 	</div>
-		 </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 — Address & Background -->
+    <div class="pd-card">
+      <div class="pd-card-header">
+        <i class="fas fa-notes-medical pd-card-icon"></i>
+        <span>Background</span>
+      </div>
+      <div class="pd-card-body">
+
+        <div class="pd-field">
+          <label class="pd-label" for="location">
+            <i class="fas fa-map-marker-alt pd-label-icon"></i> Address
+          </label>
+          <input type="text" id="location" name="location" class="pd-input"
+                 placeholder="Patient's home address"
+                 value="{{ patient.address }}">
+        </div>
+
+        {# Prior Ailments — read-only display #}
+        <div class="pd-field mt-3">
+          <span class="pd-label">
+            <i class="fas fa-history pd-label-icon"></i> Prior Ailments
+          </span>
+          <div class="pd-readonly-block">
+            {% if patient.prior_ailments %}
+              {{ patient.prior_ailments }}
+            {% else %}
+              <span class="pd-none-text">None recorded</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {# Symptoms — rendered as chip tags #}
+        <div class="pd-field mt-3">
+          <span class="pd-label">
+            <i class="fas fa-thermometer-half pd-label-icon"></i> Symptoms
+          </span>
+          <div class="pd-symptom-chips">
+            {% with symptom_str=patient.symptoms|stringformat:"s" %}
+              {# Strip brackets and quotes from MultiSelectField display string #}
+              {% if patient.symptoms %}
+                {% for sym in patient.symptoms %}
+                  <span class="pd-chip">{{ sym }}</span>
+                {% empty %}
+                  <span class="pd-none-text">No symptoms recorded</span>
+                {% endfor %}
+              {% else %}
+                <span class="pd-none-text">No symptoms recorded</span>
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 3 — Medical Status -->
+    <div class="pd-card">
+      <div class="pd-card-header">
+        <i class="fas fa-heartbeat pd-card-icon"></i>
+        <span>Medical Status</span>
+      </div>
+      <div class="pd-card-body">
+
+        {# Bed Number — live status display (read-only) #}
+        <div class="pd-live-status-row">
+          <div class="pd-live-status-item">
+            <span class="pd-live-status-label">
+              <i class="fas fa-bed"></i> Bed Number
+            </span>
+            <span class="pd-live-status-value">{{ patient.bed_num }}</span>
+          </div>
+          <div class="pd-live-status-item">
+            <span class="pd-live-status-label">
+              <i class="fas fa-user-md"></i> Attending Doctor
+            </span>
+            <span class="pd-live-status-value pd-live-status-value--doctor">{{ patient.doctor }}</span>
+          </div>
+        </div>
+
+        {# Status select — colour changes dynamically with JS #}
+        <div class="pd-field mt-4">
+          <label class="pd-label" for="status">
+            <i class="fas fa-signal pd-label-icon"></i> Patient Status
+          </label>
+          <select name="status" id="status" class="pd-input pd-select pd-status-select">
+            <option value="Critical"   {% if patient.status == "Critical"   %}selected{% endif %}>🔴 Critical</option>
+            <option value="Recovering" {% if patient.status == "Recovering" %}selected{% endif %}>🟡 Recovering</option>
+            <option value="Recovered"  {% if patient.status == "Recovered"  %}selected{% endif %}>🟢 Recovered</option>
+            <option value="Deceased"   {% if patient.status == "Deceased"   %}selected{% endif %}>⚫ Deceased</option>
+          </select>
+          {# Colour-coded live preview badge — updates with JS #}
+          <div id="statusPreview" class="pd-status-preview mt-2">
+            <span id="statusPreviewBadge" class="pd-status-badge pd-status-{{ patient.status|lower|cut:' ' }}">
+              <i class="fas fa-circle mr-1" style="font-size: 0.6rem;"></i>
+              {{ patient.status }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 4 — Care Assignment -->
+    <div class="pd-card">
+      <div class="pd-card-header">
+        <i class="fas fa-stethoscope pd-card-icon"></i>
+        <span>Care Assignment</span>
+      </div>
+      <div class="pd-card-body">
+        <div class="pd-field-grid">
+
+          <div class="pd-field">
+            <label class="pd-label" for="doctor">
+              <i class="fas fa-user-md pd-label-icon"></i> Doctor Assigned
+            </label>
+            <select name="doctor" id="doctor" class="pd-input pd-select" required>
+              {% for doc in doctors %}
+              <option value="{{ doc }}"
+                      {% if patient.doctor == doc %}selected{% endif %}>
+                {{ doc }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="pd-field">
+            <label class="pd-label" for="doctor_time">
+              <i class="fas fa-clock pd-label-icon"></i> Visiting Time
+            </label>
+            <input type="text" name="doctor_time" id="doctor_time" class="pd-input"
+                   placeholder="e.g. 09:00 AM – 10:00 AM"
+                   value="{{ patient.doctors_visiting_time }}">
+          </div>
+
+          {# Doctor Notes — full-width clinical textarea #}
+          <div class="pd-field pd-field--full">
+            <label class="pd-label" for="doctor_notes">
+              <i class="fas fa-clipboard-list pd-label-icon"></i> Doctor Notes
+              <span class="pd-label-hint">Clinical observations, prescriptions, instructions</span>
+            </label>
+            <textarea name="doctor_notes" id="doctor_notes"
+                      class="pd-input pd-textarea"
+                      rows="6"
+                      placeholder="Enter clinical notes, treatment plan, medication details...">{{ patient.doctors_notes }}</textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>{# /pd-sections-grid #}
+
+  {# ─── SAVE BUTTON ─── #}
+  <div class="pd-save-bar">
+    <a href="{% url 'patient_list' %}" class="pd-btn-secondary">
+      <i class="fas fa-times mr-2"></i> Cancel
+    </a>
+    <button type="submit" class="pd-btn-primary">
+      <i class="fas fa-save mr-2"></i> Save Changes
+    </button>
+  </div>
+
+</form>
+
+{# ─── PAGE-SCOPED STYLES ─── #}
+<style>
+/* ══════════════════════════════════════════════════════════
+   PATIENT DETAIL PAGE — Scoped styles (prefixed with pd-)
+   Uses existing CSS variables from base.css; adds nothing new
+   to the global scope.
+══════════════════════════════════════════════════════════ */
+
+/* Page Header */
+.pd-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pd-patient-name {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.pd-back-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--primary-light);
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  margin-top: 0.25rem;
+}
+.pd-back-link:hover {
+  background: var(--primary-light);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Status Badges */
+.pd-status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.3rem 0.85rem;
+  border-radius: 50px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.pd-status-critical {
+  background: var(--critical-red-light);
+  color: var(--critical-red);
+  border: 1px solid var(--critical-red);
+  animation: criticalPulse 2.5s ease-in-out infinite;
+}
+.pd-status-recovering {
+  background: var(--warning-amber-light);
+  color: var(--warning-amber);
+  border: 1px solid var(--warning-amber);
+}
+.pd-status-recovered {
+  background: var(--accent-teal-light);
+  color: var(--accent-teal);
+  border: 1px solid var(--accent-teal);
+}
+.pd-status-deceased {
+  background: rgba(75, 85, 99, 0.1);
+  color: #4B5563;
+  border: 1px solid #9CA3AF;
+}
+@keyframes criticalPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+}
+
+/* Live Chips (bed / doctor in header) */
+.pd-live-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.28rem 0.85rem;
+  border-radius: 50px;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--primary-blue);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+.pd-live-chip--doctor {
+  background: rgba(0, 168, 150, 0.08);
+  color: var(--accent-teal);
+  border-color: rgba(0, 168, 150, 0.3);
+}
+
+/* 2-Column Section Grid */
+.pd-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+@media (max-width: 768px) {
+  .pd-sections-grid { grid-template-columns: 1fr; }
+}
+
+/* Section Cards */
+.pd-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal);
+}
+.pd-card:hover { box-shadow: var(--shadow-lg); }
+
+.pd-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+[data-theme="dark"] .pd-card-header {
+  background: rgba(255,255,255,0.03);
+}
+.pd-card-icon {
+  color: var(--primary-light);
+  font-size: 1rem;
+}
+
+.pd-card-body {
+  padding: 1.25rem;
+  flex: 1;
+}
+
+/* Field Layout */
+.pd-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.25rem;
+}
+@media (max-width: 576px) {
+  .pd-field-grid { grid-template-columns: 1fr; }
+}
+.pd-field { display: flex; flex-direction: column; }
+.pd-field--full { grid-column: 1 / -1; }   /* spans both columns */
+
+/* Labels */
+.pd-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
+}
+.pd-label-icon {
+  color: var(--primary-light);
+  font-size: 0.75rem;
+  width: 14px;
+  text-align: center;
+}
+.pd-label-hint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 0.25rem;
+}
+
+/* Inputs — shared */
+.pd-input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+}
+.pd-input:focus {
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.pd-input:hover:not(:focus) {
+  border-color: var(--text-muted);
+}
+[data-theme="dark"] .pd-input {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Select chevron */
+.pd-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M10.3 3.3L6 7.6 1.7 3.3 1 4l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+/* Status select — dynamic colour border */
+.pd-status-select.status-critical   { border-color: var(--critical-red);  }
+.pd-status-select.status-recovering { border-color: var(--warning-amber); }
+.pd-status-select.status-recovered  { border-color: var(--accent-teal);   }
+.pd-status-select.status-deceased   { border-color: #9CA3AF;              }
+
+/* Textarea */
+.pd-textarea {
+  resize: vertical;
+  min-height: 9rem;
+  line-height: 1.6;
+}
+
+/* Status preview badge under select */
+.pd-status-preview {
+  display: flex;
+}
+
+/* Read-only info block */
+.pd-readonly-block {
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border-color);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  min-height: 2.5rem;
+  line-height: 1.5;
+}
+[data-theme="dark"] .pd-readonly-block {
+  background: rgba(255,255,255,0.03);
+}
+
+.pd-none-text {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Symptom Chips */
+.pd-symptom-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem 0;
+}
+.pd-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--primary-blue);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  white-space: nowrap;
+}
+.pd-chip::before {
+  content: '●';
+  font-size: 0.45rem;
+  margin-right: 0.35rem;
+  opacity: 0.7;
+}
+
+/* Live Status Row (bed + doctor at-a-glance) */
+.pd-live-status-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+@media (max-width: 480px) {
+  .pd-live-status-row { grid-template-columns: 1fr; }
+}
+.pd-live-status-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-main);
+  gap: 0.3rem;
+}
+[data-theme="dark"] .pd-live-status-item {
+  background: rgba(255,255,255,0.04);
+}
+.pd-live-status-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.pd-live-status-label i { color: var(--primary-light); }
+.pd-live-status-value {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+.pd-live-status-value--doctor {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+}
+
+/* Save Bar */
+.pd-save-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 0 0.5rem;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.pd-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 2rem;
+  background: var(--primary-blue);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+.pd-btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  color: #fff !important;
+}
+.pd-btn-primary:active { transform: translateY(0); }
+
+.pd-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7rem 1.5rem;
+  background: transparent;
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+.pd-btn-secondary:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-main);
+  color: var(--text-primary) !important;
+  text-decoration: none;
+}
+</style>
+
+{# ─── PAGE-SCOPED JAVASCRIPT ─── #}
+<script>
+(function () {
+  'use strict';
+
+  // ── Status select: live-update border colour + preview badge ──
+  const statusSelect = document.getElementById('status');
+  const previewBadge = document.getElementById('statusPreviewBadge');
+
+  const statusConfig = {
+    Critical:   { cssClass: 'pd-status-critical',   label: 'Critical',   selectClass: 'status-critical'   },
+    Recovering: { cssClass: 'pd-status-recovering',  label: 'Recovering', selectClass: 'status-recovering' },
+    Recovered:  { cssClass: 'pd-status-recovered',   label: 'Recovered',  selectClass: 'status-recovered'  },
+    Deceased:   { cssClass: 'pd-status-deceased',    label: 'Deceased',   selectClass: 'status-deceased'   },
+  };
+
+  function applyStatus(val) {
+    const cfg = statusConfig[val];
+    if (!cfg) return;
+
+    // Update select border class
+    statusSelect.className = statusSelect.className
+      .replace(/\bstatus-\S+/g, '')
+      .trim() + ' ' + cfg.selectClass;
+
+    // Update preview badge
+    previewBadge.className = 'pd-status-badge ' + cfg.cssClass;
+    previewBadge.innerHTML =
+      '<i class="fas fa-circle mr-1" style="font-size:0.6rem;"></i>' + cfg.label;
+  }
+
+  // Init on load
+  applyStatus(statusSelect.value);
+
+  // Update on change
+  statusSelect.addEventListener('change', function () {
+    applyStatus(this.value);
+  });
+})();
+</script>
+
 {% endblock content %}

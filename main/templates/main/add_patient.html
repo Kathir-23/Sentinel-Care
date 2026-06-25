@@ -1,153 +1,707 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block contentTitle %}
-    Add Patients
-{% endblock contentTitle %}
+{% block title %}HMS — Add Patient{% endblock %}
+{% block breadcrumb %}Add Patient{% endblock %}
 
 {% block content %}
 
-    <form action="" method="post">
-    {% csrf_token %}
-        
-        <div class="container">
-            <div class="patient-form ">
-                <div class="row">
-                    <div class="form-field col-md-6">
-                        <input type="text" id="name" class="input-text" type="text" name="name" placeholder="Name">
-                    </div>
+{% if messages %}
+<div class="mb-4">
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+  <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-2"></i>
+  <strong>{{ message }}</strong>
+  <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+</div>
+{% endfor %}
+</div>
+{% endif %}
 
-                    <div class="form-field col-md-6">
-                        <input type="text" id="phone_num" class="input-text" type="text" name="phone_num" placeholder="Phone no.">
-                    </div>
+<!-- Page Header -->
+<div class="ap-page-header">
+  <div>
+    <h2 class="ap-page-title">New Patient Intake</h2>
+    <p class="ap-page-subtitle">Complete all sections to register a patient and assign a bed.</p>
+  </div>
+</div>
 
-                    <div class="form-field col-md-6">
-                        <input type="text" id="patient_relative_name" class="input-text" type="text" name="patient_relative_name" placeholder="Relative's name">
-                    </div>
+<!-- Serious Symptom Warning Banner (hidden until triggered by JS) -->
+<div id="seriousSymptomBanner" class="ap-serious-banner" style="display:none;" role="alert">
+  <i class="fas fa-exclamation-triangle ap-serious-banner__icon"></i>
+  <div>
+    <strong>Serious symptoms selected</strong>
+    <span class="ap-serious-banner__text"> — confirm that bed and doctor assignment reflects the urgency of this case.</span>
+  </div>
+</div>
 
-                    <div class="form-field col-md-6">
-                        <input type="text" id="patient_relative_contact" class="input-text" type="text" name="patient_relative_contact" placeholder="Relative's contact">
-                    </div>
+<form action="" method="post" id="addPatientForm" novalidate>
+{% csrf_token %}
 
-                    <div class="form-field col-md-12">
-                        <input type="text" id="patient_relative_contact" class="input-text" type="text" name="address" placeholder="Address">
-                    </div>
+<!-- Top 3-column section grid -->
+<div class="ap-top-grid">
 
-                    <div class="form-field col-md-6" style="padding-bottom: 4px;">
-                        <input type="text" id="prior_ailments" class="form-control input-text mb-0 p-0 " style="outline:none" type="text" name="prior_ailments" placeholder="Prior ailments if any, eg: Diabetes, Thyroid">
-                    </div>
-
-                    <div class="form-field col-md-4 offset-md-2 mb-4 mx-auto">
-                    <select name="bed_num" class="btn btn-bed" id="bed_num">
-                    {% for bed in beds %}
-                        <option value={{ bed }}>{{ bed }}</option>
-                    {% endfor %}
-                    </div>
-                </div>
-                
-            </div>
-            <div class="row">
-                <div class="form-field col-md-6">
-                    <input type="date" id="dob" class="input-text" type="date" name="dob">
-                </div>
-
-                <div class="form-field col-md-6">
-                    <select class="input-text"  name="status" id="status">
-                        <option class="bg-danger text-white" value="Critical">Critical</option>
-                        <option class="bg-warning text-white" value="Recovering">Recovering</option>
-                        <option class="bg-success text-white" value="Recovered">Recovered</option>
-                        <option class="bg-secondary text-white" value="Deceased">Deceased</option>
-                    </select>
-                </div>
-
-                <div class="form-field col-md-6">
-                    <select class="input-text"  name="doctor" id="doctor">
-                        {% for doctor in doctors %}
-                            <option class="" value="{{doctor}}">{{doctor}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-
-            </div>
-
-{{doctor}}
-            <!-- symptons field -->
-            <div class="patient-form row d-flex">
-                <div class="symptoms row">
-                <div class="symptoms-label col-12 text-center mt-0">Symptoms</div><br>
-                
-                <!-- <div class="row"> -->
-                    <div class="common-symptoms col-md-4">
-                        <label for="" class="symptom-type">Common</label><br>
-
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" id="fever" value="Fever" class="checkbox">
-                        <label for="fever">Fever</label><br>
-                        </div>
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Dry Cough" id="dry_cough">
-                        <label for="">Dry cough</label><br>
-                        </div>
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Tiredness" id="tiredness">
-                        <label for="">Tiredness</label><br>
-                        </div>
-                    </div>
-                
-                    <div class="less-common-symptoms col-md-4">
-                    <div>
-                        <label for="" class="symptom-type">Less Common</label><br>
-                        
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Aches and pains" id="aches_and_pain">
-                        <label for="">Aches and pains</label><br>
-                        </div>
-        
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Sore Throat" id="sore_throat">
-                        <label for="">Sore throat</label><br>
-                        </div>
-
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" valu="Diarrhoea" id="diarrhoea">
-                        <label for="">Diarrhoea</label><br>
-                        </div>
-
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Loss of taste or smell" id="loss_of_taste_or_smell">
-                        <label for="">Loss of taste or smell</label><br>
-                        </div>
-                    </div>
-                    </div>
-                    
-                    <div class="serious-symptoms col-md-4">
-                        <label for="" class="symptom-type">Serious</label><br>
-        
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Difficulty in breathing or shortness of breath" id="difficulty_in_breathing_or_shortness_of_breath">
-                        <label for="">Difficulty in breathing or shortness of breath</label><br>
-                        </div>
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Chest pain or pressure" id="chest_pain_or_pressure">
-                        <label for="">Chest pain or pressure</label><br>
-                        </div>
-                        <div class="symptom">
-                        <input type="checkbox" name="symptoms" value="Loss Of Speech Or Movement" id="loss_of_speech_or_movement">
-                        <label for="">Loss of speech or movement</label><br>
-                        </div>
-                    </div>  
-
-
-                <!-- </div> -->
-            </div>
-            </div>
-            
-        </div>
-
-        </div>
-        </div>
+  <!-- ── CARD 1: Patient Details ── -->
+  <div class="ap-card">
+    <div class="ap-card-header ap-card-header--teal">
+      <i class="fas fa-user-circle ap-card-icon"></i>
+      <span>Patient Details</span>
     </div>
-        <button class="btn col-lg-4 btn-block mx-auto btn-info mb-4" >Add Patient</button>
-    </form>
+    <div class="ap-card-body">
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="name">
+          <i class="fas fa-id-card ap-label-icon"></i> Full Name <span class="ap-required">*</span>
+        </label>
+        <input type="text" id="name" name="name" class="ap-input"
+               placeholder="e.g. Ravi Sharma" required>
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="dob">
+          <i class="fas fa-birthday-cake ap-label-icon"></i> Date of Birth
+        </label>
+        <input type="date" id="dob" name="dob" class="ap-input">
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="address">
+          <i class="fas fa-map-marker-alt ap-label-icon"></i> Address
+        </label>
+        <input type="text" id="address" name="address" class="ap-input"
+               placeholder="Full home address">
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="prior_ailments">
+          <i class="fas fa-history ap-label-icon"></i> Prior Ailments
+        </label>
+        <input type="text" id="prior_ailments" name="prior_ailments" class="ap-input"
+               placeholder="e.g. Diabetes, Thyroid, Hypertension">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── CARD 2: Contact Info ── -->
+  <div class="ap-card">
+    <div class="ap-card-header ap-card-header--teal">
+      <i class="fas fa-address-book ap-card-icon"></i>
+      <span>Contact Info</span>
+    </div>
+    <div class="ap-card-body">
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="phone_num">
+          <i class="fas fa-mobile-alt ap-label-icon"></i> Patient Phone
+        </label>
+        <input type="text" id="phone_num" name="phone_num" class="ap-input"
+               placeholder="e.g. +91 98765 43210">
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="patient_relative_name">
+          <i class="fas fa-user-friends ap-label-icon"></i> Relative's Name
+        </label>
+        <input type="text" id="patient_relative_name" name="patient_relative_name" class="ap-input"
+               placeholder="Next of kin full name">
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="patient_relative_contact">
+          <i class="fas fa-phone ap-label-icon"></i> Relative's Contact
+        </label>
+        <input type="text" id="patient_relative_contact" name="patient_relative_contact" class="ap-input"
+               placeholder="e.g. +91 98765 43211">
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── CARD 3: Admission Info ── -->
+  <div class="ap-card ap-card--admission">
+    <div class="ap-card-header ap-card-header--teal">
+      <i class="fas fa-hospital ap-card-icon"></i>
+      <span>Admission Info</span>
+    </div>
+    <div class="ap-card-body">
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="bed_num">
+          <i class="fas fa-bed ap-label-icon"></i> Assign Bed <span class="ap-required">*</span>
+        </label>
+        <select name="bed_num" id="bed_num" class="ap-input ap-select" required>
+          <option value="" disabled selected>— Select Available Bed —</option>
+          {% for bed in beds %}
+          <option value="{{ bed }}">{{ bed }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="doctor">
+          <i class="fas fa-user-md ap-label-icon"></i> Assign Doctor <span class="ap-required">*</span>
+        </label>
+        {% if doctors %}
+        <select name="doctor" id="doctor" class="ap-input ap-select" required>
+          <option value="" disabled selected>— Select Doctor —</option>
+          {% for doc in doctors %}
+          <option value="{{ doc }}">{{ doc }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <div class="ap-warning-inline">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          No doctors found — add one via Admin panel first.
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="ap-field ap-field--full">
+        <label class="ap-label" for="status">
+          <i class="fas fa-signal ap-label-icon"></i> Patient Status <span class="ap-required">*</span>
+        </label>
+        <select name="status" id="status" class="ap-input ap-select ap-status-select" required>
+          <option value="" disabled selected>— Select Status —</option>
+          <option value="Critical">🔴 Critical</option>
+          <option value="Recovering">🟡 Recovering</option>
+          <option value="Recovered">🟢 Recovered</option>
+          <option value="Deceased">⚫ Deceased</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /ap-top-grid -->
+
+<!-- ── CARD 4: Symptoms (full width) ── -->
+<div class="ap-card ap-card--full mt-0">
+  <div class="ap-card-header ap-card-header--teal">
+    <i class="fas fa-thermometer-half ap-card-icon"></i>
+    <span>Symptoms</span>
+    <span class="ap-card-header-hint ml-2">Select all that apply</span>
+  </div>
+  <div class="ap-card-body">
+    <div class="ap-symptoms-grid">
+
+      <!-- Common column -->
+      <div class="ap-symptom-col ap-symptom-col--common">
+        <div class="ap-symptom-col-header">
+          <span class="ap-severity-badge ap-severity-badge--common">
+            <i class="fas fa-circle ap-severity-dot"></i> Common
+          </span>
+        </div>
+        <div class="ap-chips">
+          <input type="checkbox" name="symptoms" id="fever" value="Fever" class="ap-chip-input">
+          <label for="fever" class="ap-chip ap-chip--common">
+            <i class="fas fa-check ap-chip-check"></i> Fever
+          </label>
+
+          <input type="checkbox" name="symptoms" id="dry_cough" value="Dry cough" class="ap-chip-input">
+          <label for="dry_cough" class="ap-chip ap-chip--common">
+            <i class="fas fa-check ap-chip-check"></i> Dry cough
+          </label>
+
+          <input type="checkbox" name="symptoms" id="tiredness" value="Tiredness" class="ap-chip-input">
+          <label for="tiredness" class="ap-chip ap-chip--common">
+            <i class="fas fa-check ap-chip-check"></i> Tiredness
+          </label>
+        </div>
+      </div>
+
+      <!-- Less Common column -->
+      <div class="ap-symptom-col ap-symptom-col--less-common">
+        <div class="ap-symptom-col-header">
+          <span class="ap-severity-badge ap-severity-badge--amber">
+            <i class="fas fa-circle ap-severity-dot"></i> Less Common
+          </span>
+        </div>
+        <div class="ap-chips">
+          <input type="checkbox" name="symptoms" id="aches_and_pain" value="Aches and pains" class="ap-chip-input">
+          <label for="aches_and_pain" class="ap-chip ap-chip--amber">
+            <i class="fas fa-check ap-chip-check"></i> Aches and pains
+          </label>
+
+          <input type="checkbox" name="symptoms" id="sore_throat" value="Sore throat" class="ap-chip-input">
+          <label for="sore_throat" class="ap-chip ap-chip--amber">
+            <i class="fas fa-check ap-chip-check"></i> Sore throat
+          </label>
+
+          <input type="checkbox" name="symptoms" id="diarrhoea" value="Diarrhoea" class="ap-chip-input">
+          <label for="diarrhoea" class="ap-chip ap-chip--amber">
+            <i class="fas fa-check ap-chip-check"></i> Diarrhoea
+          </label>
+
+          <input type="checkbox" name="symptoms" id="loss_of_taste_or_smell" value="Loss of taste or smell" class="ap-chip-input">
+          <label for="loss_of_taste_or_smell" class="ap-chip ap-chip--amber">
+            <i class="fas fa-check ap-chip-check"></i> Loss of taste or smell
+          </label>
+        </div>
+      </div>
+
+      <!-- Serious column -->
+      <div class="ap-symptom-col ap-symptom-col--serious">
+        <div class="ap-symptom-col-header">
+          <span class="ap-severity-badge ap-severity-badge--serious">
+            <i class="fas fa-exclamation-circle ap-severity-dot"></i> Serious — Urgent
+          </span>
+        </div>
+        <div class="ap-chips">
+          <input type="checkbox" name="symptoms" id="difficulty_breathing"
+                 value="Difficulty in breathing or shortness of breath"
+                 class="ap-chip-input ap-serious-trigger">
+          <label for="difficulty_breathing" class="ap-chip ap-chip--serious">
+            <i class="fas fa-check ap-chip-check"></i> Difficulty breathing
+          </label>
+
+          <input type="checkbox" name="symptoms" id="chest_pain"
+                 value="Chest pain or pressure"
+                 class="ap-chip-input ap-serious-trigger">
+          <label for="chest_pain" class="ap-chip ap-chip--serious">
+            <i class="fas fa-check ap-chip-check"></i> Chest pain or pressure
+          </label>
+
+          <input type="checkbox" name="symptoms" id="loss_of_speech"
+                 value="Loss of speech or movement"
+                 class="ap-chip-input ap-serious-trigger">
+          <label for="loss_of_speech" class="ap-chip ap-chip--serious">
+            <i class="fas fa-check ap-chip-check"></i> Loss of speech or movement
+          </label>
+        </div>
+      </div>
+
+    </div><!-- /ap-symptoms-grid -->
+  </div>
+</div>
+
+<!-- Save Bar -->
+<div class="ap-save-bar">
+  <a href="{% url 'dashboard' %}" class="ap-btn-secondary">
+    <i class="fas fa-times mr-2"></i> Cancel
+  </a>
+  <button type="submit" class="ap-btn-primary">
+    <i class="fas fa-user-plus mr-2"></i> Add Patient
+  </button>
+</div>
+
+</form>
+
+<!-- ── Page-scoped styles ── -->
+<style>
+/* ============================================================
+   ADD PATIENT PAGE — scoped with ap- prefix
+   Accent: --accent-teal (#00A896) from base.css tokens
+   Framework: Bootstrap 4 grid (already loaded in base.html)
+============================================================ */
+
+/* Page header */
+.ap-page-header {
+  margin-bottom: 1.5rem;
+}
+.ap-page-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin: 0 0 0.25rem;
+  color: var(--text-primary);
+}
+.ap-page-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Serious warning banner */
+.ap-serious-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--critical-red-light);
+  border-left: 4px solid var(--critical-red);
+  border-radius: var(--border-radius);
+  padding: 0.9rem 1.25rem;
+  color: var(--critical-red);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  animation: apBannerIn 0.3s ease forwards;
+}
+.ap-serious-banner__icon { font-size: 1.3rem; flex-shrink: 0; }
+.ap-serious-banner__text { font-weight: 400; }
+@keyframes apBannerIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Top 3-column grid */
+.ap-top-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 992px) {
+  .ap-top-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .ap-top-grid { grid-template-columns: 1fr; }
+}
+
+/* Cards */
+.ap-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+.ap-card:hover { box-shadow: var(--shadow-lg); }
+.ap-card--full {
+  grid-column: 1 / -1;
+  margin-bottom: 1.5rem;
+}
+
+/* Admission card — subtle teal left accent */
+.ap-card--admission {
+  border-left: 3px solid var(--accent-teal);
+}
+
+/* Card header */
+.ap-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+}
+[data-theme="dark"] .ap-card-header { background: rgba(255,255,255,0.03); }
+
+.ap-card-header--teal .ap-card-icon { color: var(--accent-teal); }
+.ap-card-header-hint {
+  font-weight: 400;
+  font-size: 0.72rem;
+  text-transform: none;
+  color: var(--text-muted);
+  letter-spacing: 0;
+}
+
+.ap-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+/* Fields */
+.ap-field { display: flex; flex-direction: column; }
+.ap-field--full { width: 100%; }
+
+/* Labels */
+.ap-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+.ap-label-icon { color: var(--accent-teal); font-size: 0.72rem; width: 14px; text-align: center; }
+.ap-required { color: var(--critical-red); font-size: 0.85rem; }
+
+/* Inputs & Selects */
+.ap-input {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  appearance: none;
+  -webkit-appearance: none;
+  height: 2.75rem;
+  line-height: 1.5;
+}
+.ap-input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+  box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.15);
+}
+.ap-input:hover:not(:focus) { border-color: var(--text-muted); }
+[data-theme="dark"] .ap-input {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+/* Custom select chevron */
+.ap-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300A896' d='M10.3 3.3L6 7.6 1.7 3.3 1 4l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+/* Status select dynamic border */
+.ap-status-select.status-critical   { border-color: var(--critical-red);  box-shadow: 0 0 0 3px rgba(220,38,38,0.1); }
+.ap-status-select.status-recovering { border-color: var(--warning-amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+.ap-status-select.status-recovered  { border-color: var(--accent-teal);   box-shadow: 0 0 0 3px rgba(0,168,150,0.1); }
+
+/* Warning inline (no doctors) */
+.ap-warning-inline {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  background: var(--warning-amber-light);
+  color: var(--warning-amber);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--warning-amber);
+}
+
+/* ── Symptoms section ── */
+.ap-symptoms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 768px) {
+  .ap-symptoms-grid { grid-template-columns: 1fr; }
+}
+
+.ap-symptom-col {
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Column background tints */
+.ap-symptom-col--common     { background: rgba(107, 114, 128, 0.05); border: 1px solid rgba(107,114,128,0.15); }
+.ap-symptom-col--less-common{ background: var(--warning-amber-light); border: 1px solid rgba(245,158,11,0.25); }
+.ap-symptom-col--serious    {
+  background: var(--critical-red-light);
+  border: 1.5px solid rgba(220,38,38,0.3);
+  box-shadow: inset 0 0 0 1px rgba(220,38,38,0.08);
+}
+
+.ap-symptom-col-header { margin-bottom: 0.25rem; }
+
+/* Severity badges */
+.ap-severity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 0.2rem 0.65rem;
+  border-radius: 50px;
+}
+.ap-severity-dot { font-size: 0.5rem; }
+.ap-severity-badge--common      { background: rgba(107,114,128,0.12); color: #4B5563; }
+.ap-severity-badge--amber       { background: var(--warning-amber-light); color: var(--warning-amber); border: 1px solid rgba(245,158,11,0.4); }
+.ap-severity-badge--serious     { background: var(--critical-red-light);  color: var(--critical-red);  border: 1px solid rgba(220,38,38,0.4); }
+
+/* Chip controls — hidden native checkbox */
+.ap-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ap-chip-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Chip label base */
+.ap-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all var(--transition-fast);
+  user-select: none;
+  line-height: 1.3;
+}
+
+/* Checkmark icon hidden by default */
+.ap-chip-check { font-size: 0.65rem; opacity: 0; transition: opacity var(--transition-fast); }
+
+/* Common chips */
+.ap-chip--common {
+  background: rgba(107,114,128,0.08);
+  color: #374151;
+  border-color: rgba(107,114,128,0.2);
+}
+.ap-chip--common:hover { background: rgba(107,114,128,0.15); }
+#fever:checked       ~ .ap-chip--common[for="fever"],
+#dry_cough:checked   ~ .ap-chip--common[for="dry_cough"],
+#tiredness:checked   ~ .ap-chip--common[for="tiredness"],
+.ap-chip-input:checked + .ap-chip--common {
+  background: #374151;
+  color: #fff;
+  border-color: #374151;
+}
+
+/* Amber chips */
+.ap-chip--amber {
+  background: var(--warning-amber-light);
+  color: #92400E;
+  border-color: rgba(245,158,11,0.3);
+}
+.ap-chip--amber:hover { background: rgba(245,158,11,0.2); }
+.ap-chip-input:checked + .ap-chip--amber {
+  background: var(--warning-amber);
+  color: #fff;
+  border-color: var(--warning-amber);
+}
+
+/* Serious chips */
+.ap-chip--serious {
+  background: var(--critical-red-light);
+  color: #991B1B;
+  border-color: rgba(220,38,38,0.3);
+}
+.ap-chip--serious:hover { background: rgba(220,38,38,0.15); }
+.ap-chip-input:checked + .ap-chip--serious {
+  background: var(--critical-red);
+  color: #fff;
+  border-color: var(--critical-red);
+  box-shadow: 0 2px 8px rgba(220,38,38,0.35);
+}
+
+/* Show checkmark when selected */
+.ap-chip-input:checked + .ap-chip .ap-chip-check { opacity: 1; }
+
+/* Save bar */
+.ap-save-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 0 0.5rem;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.ap-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.72rem 2rem;
+  background: var(--accent-teal);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(0,168,150,0.35);
+  text-decoration: none;
+}
+.ap-btn-primary:hover {
+  background: #008f7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,168,150,0.45);
+  color: #fff !important;
+}
+.ap-btn-primary:active { transform: translateY(0); }
+
+.ap-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.72rem 1.5rem;
+  background: transparent;
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+.ap-btn-secondary:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-main);
+  color: var(--text-primary) !important;
+  text-decoration: none;
+}
+</style>
+
+<!-- Page-scoped JS -->
+<script>
+(function () {
+  'use strict';
+
+  // ── Serious symptom banner toggle ──
+  var seriousInputs = document.querySelectorAll('.ap-serious-trigger');
+  var banner = document.getElementById('seriousSymptomBanner');
+
+  function syncBanner() {
+    var anyChecked = Array.prototype.some.call(seriousInputs, function (el) {
+      return el.checked;
+    });
+    if (anyChecked) {
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  seriousInputs.forEach(function (el) {
+    el.addEventListener('change', syncBanner);
+  });
+
+  // ── Status select border colour ──
+  var statusSelect = document.getElementById('status');
+  var statusMap = {
+    'Critical':   'status-critical',
+    'Recovering': 'status-recovering',
+    'Recovered':  'status-recovered',
+    'Deceased':   ''
+  };
+
+  function applyStatusStyle() {
+    statusSelect.className = statusSelect.className.replace(/\bstatus-\S+/g, '').trim();
+    var cls = statusMap[statusSelect.value];
+    if (cls) statusSelect.classList.add(cls);
+  }
+
+  if (statusSelect) {
+    statusSelect.addEventListener('change', applyStatusStyle);
+    applyStatusStyle();
+  }
+})();
+</script>
+
 {% endblock content %}

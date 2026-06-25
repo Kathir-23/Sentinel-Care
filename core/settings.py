@@ -13,6 +13,14 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import os.path
 from pathlib import Path
+
+# For Railway/cloud: pip install python-decouple  (already in requirements)
+try:
+    from decouple import config
+except ImportError:
+    def config(key, default=None, cast=None):
+        val = os.environ.get(key, default)
+        return cast(val) if (cast and val is not None) else val
 from django.contrib.messages import constants as messages
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +30,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6=drjci9-24*%p-ru1sbqbl0$$!b)_q&_cu5z26y7wk+wk9g!^'
+# In production set SECRET_KEY as an environment variable in Railway dashboard
+SECRET_KEY = config('SECRET_KEY', default='6=drjci9-24*%p-ru1sbqbl0$$!b)_q&_cu5z26y7wk+wk9g!^')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DEBUG=False in Railway environment variables
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['hospital-management-covid19.herokuapp.com', '127.0.0.1']
+# '*' accepts any Railway subdomain; tighten to your exact domain in production
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS += ['*.railway.app', '*.up.railway.app']
 
 
 # Application definition
@@ -134,8 +145,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/images/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
