@@ -38,7 +38,8 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 # '*' accepts any Railway subdomain; tighten to your exact domain in production
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
-ALLOWED_HOSTS += ['*.railway.app', '*.up.railway.app']
+ALLOWED_HOSTS += ['*.railway.app', '*.up.railway.app', '*.vercel.app']
+
 
 
 # Application definition
@@ -90,10 +91,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# Database — use /tmp on Vercel (writable), local file otherwise
+import sys
+if 'VERCEL' in os.environ:
+    DB_PATH = '/tmp/db.sqlite3'
+else:
+    DB_PATH = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 
