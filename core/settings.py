@@ -149,7 +149,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# On Vercel static files go to /tmp (writable); locally use the project staticfiles dir
+if 'VERCEL' in os.environ:
+    STATIC_ROOT = '/tmp/staticfiles'
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
