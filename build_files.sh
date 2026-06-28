@@ -1,4 +1,4 @@
 #!/bin/bash
-# Vercel build script — runs during deployment
-pip install -r requirements.txt
+# Vercel build script
+pip install --break-system-packages -r requirements.txt
 python manage.py collectstatic --noinput
