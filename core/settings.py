@@ -38,7 +38,13 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 # '*' accepts any Railway subdomain; tighten to your exact domain in production
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
-ALLOWED_HOSTS += ['*.railway.app', '*.up.railway.app', '*.vercel.app']
+ALLOWED_HOSTS += ['.railway.app', '.up.railway.app', '.vercel.app', '*']
+
+# Trust Vercel origins for CSRF (form submissions)
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.up.railway.app',
+]
 
 
 
